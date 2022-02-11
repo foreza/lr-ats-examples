@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>ATS Test</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+</head>
+
+<body>
+    <h1>Hello, ATS!</h1>
+    <form id="example-form">
+        <label for="email">Your Email</label>
+        <input type="text" id="email" required>
+        <button type="submit">Submit</button>
+    </form>
+
+
+    <script>
+        function doSubmit(event) {
+            console.log(`Form Submitted! Time stamp: ${event.timeStamp}`);
+            // event.preventDefault();
+        }
+
+        const form = document.getElementById('example-form');
+        form.addEventListener('submit', doSubmit);
+    </script>
+
+
+</body>
+
+</html>
