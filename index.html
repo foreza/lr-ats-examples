@@ -9,7 +9,8 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 
     <!-- Load this as close to the top of the document as possible -->
-    <script async defer src="https://launchpad-wrapper.privacymanager.io/0ac9abb3-e561-4f79-9385-9bb06f8aa49a/launchpad-liveramp.js"></script>
+    <script async defer
+        src="https://launchpad-wrapper.privacymanager.io/0ac9abb3-e561-4f79-9385-9bb06f8aa49a/launchpad-liveramp.js"></script>
 
 
 </head>
@@ -23,14 +24,53 @@
     </form>
 
 
+    <div>
+        <h1>ATS stats</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ATS Enabled</td>
+                    <td id="atsEnabled">?</td>
+                </tr>
+            </tbody>
+        </table>
+        
+    </div>
+
+
     <script>
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Doc loaded");
+
+            const form = document.getElementById('example-form');
+            form.addEventListener('submit', doSubmit);
+
+
+            // hacky way
+            setTimeout(() => {checkATSStatus();}, 2000);
+        });
+
         function doSubmit(event) {
             console.log(`Form Submitted! Time stamp: ${event.timeStamp}`);
-            // event.preventDefault();
+            event.preventDefault();
         }
 
-        const form = document.getElementById('example-form');
-        form.addEventListener('submit', doSubmit);
+        function checkATSStatus(){
+            let atsEnabled = document.getElementById('atsEnabled');
+            if (typeof(ats) == 'undefined') {
+            atsEnabled.textContent = "Not loaded"
+            } else {
+                atsEnabled.textContent = "Loaded"
+            }
+        }
+
+
     </script>
 
 
