@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>ATS CID From ESP Clickthrough</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <!-- Load this as close to the top of the document as possible -->
+    <!-- This uses a different config for just clickthrough -->
+    <script async defer src="https://ats-wrapper.privacymanager.io/ats-modules/a11d2d17-d9dc-43e8-8be3-491d614cf90d/ats.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Hello, ATS!</h1>
+        <p>This example shows a example email landing page that will provide an envelope when a custom identifier is passed.</p>
+        <ul>
+            <li><a href="/?utm_email=1527A49124DC347C5431B4533B&blah=hello">Test link with utm_email=1527A49124DC347C5431B4533B</a></li>
+            <li><a href="/?utm_email=12345678901234567890&blah=hello">Test link with utm_email=12345678901234567890</a></li>
+            <li><a href="/?blah=hello">Test link with nothing</a></li>
+
+        </ul>
+
+        <div>
+            <h3>General ATS info</h1>
+            <p>ATS Enabled: <span id="atsEnabled"></span></p>
+            <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
+            <button onclick="checkForEnvelope()">Check for Envelope</button>
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        async function checkForEnvelope() {
+
+            const envDisplay = document.getElementById("atsEnvelopeValue");
+            let displayVal = "";
+
+            if (typeof(ats) != 'undefined') {
+                var env = await ats.retrieveEnvelope();
+                if (typeof(env) != 'undefined') {
+                    displayVal = env;
+                } else {
+                    displayVal = "no envelope"
+                }
+                
+            } else {
+                displayVal = "ats not defined"
+            }
+
+            envDisplay.textContent = displayVal;
+
+            
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Doc loaded");
+
+        
+
+            // TODO: get rid of this hacky way.
+            setTimeout(() => {
+                var isEnabled = checkATSStatus();
+                if (isEnabled) {
+                    
+                }
+            }, 1000);
+        });
+
+
+        function checkATSStatus() {
+            let atsEnabled = document.getElementById('atsEnabled');
+            if (typeof (ats) == 'undefined') {
+                atsEnabled.textContent = "Not loaded"
+                return false
+            } else {
+                atsEnabled.textContent = "Loaded"
+                return true;
+            }
+        }
+
+    </script>
+
+
+</body>
+
+</html>
