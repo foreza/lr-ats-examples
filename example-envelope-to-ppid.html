@@ -132,7 +132,7 @@
             if (typeof (ats) != 'undefined') {
                 console.log("fetching idl for envelope", envDisplay.textContent);
                 var env = envDisplay.textContent;
-                var ppid = await fetchPPIDFromEnvelope(env.idl);
+                var ppid = await fetchPPIDFromEnvelope(env.envelope);
 
                 if (typeof (ppid) != 'undefined') {
                         displayVal = ppid;
