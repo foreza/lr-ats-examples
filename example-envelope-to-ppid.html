@@ -91,7 +91,7 @@
                 <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
                 <button onclick="checkForEnvelope()">Check for Envelope</button>
 
-                <p>Envelope Available: <span id="ppidValue"></span></p>
+                <p>PPID Available: <span id="ppidValue"></span></p>
                 <button onclick="transcodeEnvelope()">Check for Envelope</button>
         </div>
 
@@ -131,10 +131,11 @@
             
             if (typeof (ats) != 'undefined') {
                 console.log("fetching idl for envelope", envDisplay.textContent);
-                var ppid = await fetchPPIDFromEnvelope(envDisplay.textContent);
+                var env = envDisplay.textContent;
+                var ppid = await fetchPPIDFromEnvelope(env.idl);
 
                 if (typeof (ppid) != 'undefined') {
-                        displayVal = env;
+                        displayVal = ppid;
                     } else { 
                         displayVal = "failed" 
                     }
