@@ -49,7 +49,7 @@
             // Note: PID 13597 describes a partner's encoding format - like for example, Adslot
             let result = await fetch(`https://api.rlcdn.com/api/identity/idl?pid=13597&it=19&iv=${envelope}`)
             let ppid = await result.json();
-            return ppid;
+            return ppid.idl;
         }
 
         // After this, you're good to go! The PPID can be set in the downstream ad request.
@@ -118,16 +118,27 @@
         let emailInputRef;
 
         async function transcodeEnvelope() {
-            let envDisplay = document.getElementById(" atsEnvelopeValue"); let
-                ppidDisplay = document.getElementById("ppidValue"); let displayVal = ""; if (typeof (ats)
-                    != 'undefined') {
-                        console.log("fetching idl for envelope", envDisplay.textContent); var
-                            env = JSON.parse(envDisplay.textContent); var ppid = await fetchPPIDFromEnvelope(env.envelope); if
-                    (typeof (ppid) != 'undefined') { displayVal = ppid; } else { displayVal = "failed" }
+            let envDisplay = document.getElementById("atsEnvelopeValue"); 
+            let ppidDisplay = document.getElementById("ppidValue"); 
+            let displayVal = ""; 
+            
+            if (typeof (ats) != 'undefined') {
+                console.log("fetching idl for envelope", envDisplay.textContent); 
+                        var env = JSON.parse(envDisplay.textContent); 
+                        var ppid = await fetchPPIDFromEnvelope(env.envelope); 
+                        if (typeof (ppid) != 'undefined') { 
+                            displayVal = ppid; 
+                        } else { 
+                            displayVal = "failed" 
+                        }
             } else {
                 displayVal = "failed"
-            } ppidDisplay.textContent = displayVal;
-        } async function checkForEnvelope() {
+            } 
+            ppidDisplay.textContent = displayVal;
+        } 
+        
+        
+        async function checkForEnvelope() {
             let envDisplay = document.getElementById("atsEnvelopeValue"); let displayVal = ""; if (typeof (ats)
                 != 'undefined') {
                     var env = await ats.retrieveEnvelope(); if (typeof (env) != 'undefined') {
@@ -135,7 +146,10 @@
                     } else { displayVal = "no envelope" }
             } else { displayVal = "ats not defined" }
             envDisplay.textContent = displayVal;
-        } // Example invocation call, we'll call this with our UI
+        } 
+        
+        
+        // Example invocation call, we'll call this with our UI
         function setATSDirectForIdentifier(cleartextEmail) {
             let
             tuple = getHashedIdentifierTuple(cleartextEmail); setHashedIdentifiersForATSDirect(tuple.md5,
