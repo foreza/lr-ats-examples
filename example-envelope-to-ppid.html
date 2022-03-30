@@ -7,24 +7,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
-
-    <!-- In some cases (usually for only US based publishers), you won't need to use our launchpad tag manager if you only plan on leveraging our ATS.js offering -->
     <script async defer src="https://ats-wrapper.privacymanager.io/ats-modules/73e3e8e3-19f2-4e11-8446-73106b3c7853/ats.js"></script>'
-
-    <!-- We RECOMMEND using a publicly auditable hashing implementation so you know what you're getting into! -->
     <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
-
-    <!-- To make things look dapper.. -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
-    <!-- For the sake of building our example, we'll include this specific portion in-line here -->
+    <!-- Publisher integration overview for ATS with AdSlot (direct) -->
     <script>
 
-        // Here's an example of how you might quickly hash your identifiers.
+        // Step 1: Collect the email (like on a login event), and then hash it.
+        // Here's an example of how you might hash your identifiers.
+        // LiveRamp recommends providing all 3 types below.
         function getHashedIdentifierTuple(rawIdentifier) {
-            // Please do additional sanitization/input checking prior..
-
+            // And yes, please do additional sanitization/input checking prior..
             let hashedIDTuple = {};
 
             if (typeof (rawIdentifier) != "undefined" && rawIdentifier.length > 0) {
@@ -34,13 +29,12 @@
                     sha256: new Hashes.SHA256().hex(rawIdentifier)
                 }
             }
-
             return hashedIDTuple;
         }
 
 
-        // Here's an example of using "setAdditionalData" - this will in turn trigger
-        // a request to our identity API service for a RampID envelope.
+        // Step 2: Use the ATS.js method for "setAdditionalData" to provide email hashes.
+        // This will trigger a request to our identity API service for a RampID envelope.
         function setHashedIdentifiersForATSDirect(identifierMD5, identifierSHA1, identifierSHA256) {
             atsenvelopemodule.setAdditionalData({
                 'type': 'emailHashes',
@@ -48,19 +42,17 @@
             });
         }
 
-        // Example invocation call, we'll call this with our UI
-        function setATSDirectForIdentifier(cleartextEmail) {
-            let tuple = getHashedIdentifierTuple(cleartextEmail);
-            setHashedIdentifiersForATSDirect(tuple.md5, tuple.sha1, tuple.sha256);
-        }
 
-
+        // Step 3: From the envelope obtained in step 2, feed that into our transcoding API endpoint
+        // This (can) be added to our main library if there is sufficient enough demand for it
         async function fetchPPIDFromEnvelope(envelope) {
-            fetch(`https://api.rlcdn.com/api/identity/idl?pid=13597&it=19&iv=${envelope}`)
-            .then(res => res.json())
-            .then(res => console.log("IDl: ", res))
-            .catch(err => console.log("Error:", err));
+            // Note: PID 13597 describes a partner's encoding format - like for example, Adslot
+            let result = await fetch(`https://api.rlcdn.com/api/identity/idl?pid=13597&it=19&iv=${envelope}`)
+            let ppid = await result.json();
+            return ppid;
         }
+
+        // After this, you're good to go! The PPID can be set in the downstream ad request.
 
 
     </script>
@@ -70,7 +62,8 @@
 <body>
     <div class="container">
         <h1>Hello, ATS! (direct mode)</h1>
-        <p>This example allows you to provide an identifier directly to ATS, and then transcode the envelope to a "PPID" to be used within GAM</p>
+        <p>This example allows you to provide an identifier directly to ATS, and then transcode the envelope to a "PPID"
+            to be used within GAM</p>
         <p>This approach can work with any mode of ATS.js (and even calling the API!)</p>
 
         <form id="example-form">
@@ -86,16 +79,19 @@
 
 
         <div>
-            <h3>General ATS info</h1>
+            <h3>ATS Info </h1>
                 <p>ATS Enabled: <span id="atsEnabled"></span></p>
                 <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
                 <button onclick="checkForEnvelope()">Check for Envelope</button>
 
                 <p>PPID Available: <span id="ppidValue"></span></p>
                 <button onclick="transcodeEnvelope()">Check for Envelope</button>
+                <p>After you have a PPID, you can set it in your downstream ad request!</p>
+
+
         </div>
 
-
+        <!-- This is just debug information -->
         <div>
 
             <h3>Envelope module info</h1>
@@ -118,78 +114,52 @@
 
     <script>
 
-        // This section contains the juice to make the code examples work, and are pretty ugly.
-
+        // This section contains the code that powers the examples.
         let emailInputRef;
 
-        async function transcodeEnvelope(){
-
-            let envDisplay = document.getElementById("atsEnvelopeValue"); 
-            let ppidDisplay = document.getElementById("ppidValue"); 
-
-            let displayVal = ""; 
-            
-            if (typeof (ats) != 'undefined') {
-                console.log("fetching idl for envelope", envDisplay.textContent);
-                var env = JSON.parse(envDisplay.textContent);
-                var ppid = await fetchPPIDFromEnvelope(env.envelope);
-
-                if (typeof (ppid) != 'undefined') {
-                        displayVal = ppid;
-                    } else { 
-                        displayVal = "failed" 
-                    }
-
-            } else { 
-                displayVal = "failed" 
-            }
-
-            ppidDisplay.textContent = displayVal;
-
-        }
-
-        async function checkForEnvelope() {
-
-            let envDisplay = document.getElementById("atsEnvelopeValue"); 
-            let displayVal = ""; 
-            
-            if (typeof (ats) != 'undefined') {
-
-                var env = await ats.retrieveEnvelope(); 
-
-                if (typeof (env) != 'undefined') {
+        async function transcodeEnvelope() {
+            let envDisplay = document.getElementById(" atsEnvelopeValue"); let
+                ppidDisplay = document.getElementById("ppidValue"); let displayVal = ""; if (typeof (ats)
+                    != 'undefined') {
+                        console.log("fetching idl for envelope", envDisplay.textContent); var
+                            env = JSON.parse(envDisplay.textContent); var ppid = await fetchPPIDFromEnvelope(env.envelope); if
+                    (typeof (ppid) != 'undefined') { displayVal = ppid; } else { displayVal = "failed" }
+            } else {
+                displayVal = "failed"
+            } ppidDisplay.textContent = displayVal;
+        } async function checkForEnvelope() {
+            let envDisplay = document.getElementById("atsEnvelopeValue"); let displayVal = ""; if (typeof (ats)
+                != 'undefined') {
+                    var env = await ats.retrieveEnvelope(); if (typeof (env) != 'undefined') {
                         displayVal = env;
-                    } else { 
-                        displayVal = "no envelope" 
-                    }
-
-            } else { 
-                displayVal = "ats not defined" 
-            }
-
+                    } else { displayVal = "no envelope" }
+            } else { displayVal = "ats not defined" }
             envDisplay.textContent = displayVal;
-        } 
-        
-        document.addEventListener('DOMContentLoaded', () => {
+        } // Example invocation call, we'll call this with our UI
+        function setATSDirectForIdentifier(cleartextEmail) {
+            let
+            tuple = getHashedIdentifierTuple(cleartextEmail); setHashedIdentifiersForATSDirect(tuple.md5,
+                tuple.sha1, tuple.sha256);
+        } document.addEventListener('DOMContentLoaded', () => {
             console.log("Doc loaded");
 
             emailInputRef = document.getElementById('emailInput');
             emailInputRef.addEventListener('input', doLiveHashUIUpdate);
 
             // Prevent submit button from redirecting
-            document.getElementById("directSubmit").addEventListener("click", 
-            (e) => e.preventDefault());
+            document.getElementById("directSubmit").addEventListener("click",
+                (e) => e.preventDefault());
         });
 
         // TODO: get rid of this hacky way.
         setTimeout(() => {
-                var isEnabled = checkATSStatus();
-                if (isEnabled) {
-                    let envInfoTableRef = document.getElementById("envelope-module-info");
-                    envModuleInfo = getATSEnvelopeModuleInfo();
-                    renderModuleInfoObjToTable(envModuleInfo, envInfoTableRef);
-                }
-            }, 1000);
+            var isEnabled = checkATSStatus();
+            if (isEnabled) {
+                let envInfoTableRef = document.getElementById("envelope-module-info");
+                envModuleInfo = getATSEnvelopeModuleInfo();
+                renderModuleInfoObjToTable(envModuleInfo, envInfoTableRef);
+            }
+        }, 1000);
 
 
         let md5InputSpanRef = document.getElementById('md5hashedInput');
@@ -206,7 +176,7 @@
         }
 
 
-        function onclick_doDirectATSCall(){
+        function onclick_doDirectATSCall() {
             setATSDirectForIdentifier(emailInputRef.value);
         }
 
@@ -246,9 +216,7 @@
                         tData = document.createElement("td"); tData.textContent = infoObj[keyCollection];
                 tRow.appendChild(tKey); tRow.appendChild(tData); tableRef.appendChild(tRow);
             }
-        } 
-        
-        </script>
+        } </script>
 </body>
 
 </html>
