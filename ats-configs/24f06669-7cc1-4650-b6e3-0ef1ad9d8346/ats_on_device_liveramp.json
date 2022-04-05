@@ -1,5 +1,5 @@
 {
-    "configVersion": 6,
+    "configVersion": 999,
     "appId": "24f06669-7cc1-4650-b6e3-0ef1ad9d8346",
     "pId": 14,
     "preferredATS": "automatic",
@@ -34,11 +34,11 @@
         },
         "ccpa": {
             "allCountries": false,
-            "allStates": true,
+            "allStates": false,
             "countries": [
                 "US"
             ],
-            "states": []
+            "states": ["CA"]
         }
     },
     "isLoggingEnabled": true,
