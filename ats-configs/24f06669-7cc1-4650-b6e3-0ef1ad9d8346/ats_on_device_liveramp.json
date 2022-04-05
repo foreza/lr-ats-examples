@@ -1,5 +1,5 @@
 {
-    "configVersion": 999,
+    "configVersion": 9001,
     "appId": "24f06669-7cc1-4650-b6e3-0ef1ad9d8346",
     "pId": 14,
     "preferredATS": "automatic",
@@ -38,7 +38,9 @@
             "countries": [
                 "US"
             ],
-            "states": ["CA"]
+            "states": [
+                "CA"
+            ]
         }
     },
     "isLoggingEnabled": true,
