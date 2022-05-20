@@ -50,6 +50,12 @@
                 });
             }
         }
+
+        function refreshPBJSUserId(){
+            console.log("Refreshing...")
+            pbjs.refreshUserIds();
+        }
+
     </script>
 
 </head>
@@ -65,10 +71,11 @@
 
 
         <div>
-            <h3>General ATS info</h1>
+            <h3>General info</h1>
                 <p>ATS Enabled: <span id="atsEnabled"></span></p>
                 <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
                 <button onclick="checkForEnvelope()">Fetch a Test Envelope</button>
+                <button onclick="refreshPBJSUserId()">Refresh PBJS User Ids</button>
         </div>
 
         <h5>Test Ad</h5>
