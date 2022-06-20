@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>ATS Form Submit Detect Example</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+
+
+    <meta name="google-signin-client_id"
+        content="454560084516-akdmbr8tr52bj5l5ru9hev4h2inslgn9.apps.googleusercontent.com">
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <!-- Load this as close to the top of the document as possible -->
+    <!-- <script async defer src="https://launchpad-wrapper.privacymanager.io/0ac9abb3-e561-4f79-9385-9bb06f8aa49a/launchpad-liveramp.js"></script> -->
+
+    <!-- For local testing if you happen to be using localhost. Your envelope requests will fail if you run this on any other site. -->
+    <script
+        src="https://ats-wrapper.privacymanager.io/ats-modules/2bc4da3a-b0ae-49bb-8dbe-eb3d05ecbd38/ats.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
+    <!-- Load the JS SDK asynchronously -->
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+
+    <script language="JavaScript" type="text/javascript"
+        src="https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js"></script>
+
+
+
+
+    <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+
+    <style>
+        #example-form {
+            max-width: 600px;
+            border: 3px solid green;
+            padding: 20px;
+        }
+
+        #example-form button {
+            margin: 0;
+            padding: 0;
+            width: 100px;
+            height: 40px;
+            background: black;
+            color: white;
+        }
+
+        .container-login {
+            border: 3px solid blue;
+            padding: 10px;
+            max-width: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Hello, ATS!</h1>
+
+        <h2>Sign in Directly (Example)</h2>
+        <p>This example shows you how to capture your direct logins.</p>
+        <p>Typically, the direct login can be captured on/before form submission by specifying the form container ID.
+        </p>
+        <p>You can optionally choose to use `setAdditionalData` once your user has logged in; but the choice is yours!
+        </p>
+        <form id="example-form">
+            <label for="email">Your Email</label>
+            <input type="text" id="email" required>
+            <label for="password">FakePassword (absolutely harmless)</label>
+            <input type="password" id="password">
+            <button type="submit">Submit</button>
+        </form>
+
+
+
+
+
+
+        <h2 id="google-example">Sign in with Google Example</h2>
+        <a href="#google-example">Test</a>
+        <p>With GSI; Google will typically provide back a JWT token.</p>
+        <p>Decrypt the JWT token to get the email, and then pass it to ATS with `setAdditionalData`</p>
+        <p>Note: You won't be able to capture the email before form submission.</p>
+        <p>The older method is still documented on our website (where a `googleUser` is returned)</p>
+        <p></p>
+        <div class="container-login">
+            <div id="g_id_onload"
+                data-client_id="454560084516-akdmbr8tr52bj5l5ru9hev4h2inslgn9.apps.googleusercontent.com"
+                data-callback="parseJWTTokenFromGoogle" data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+                data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left">
+            </div>
+        </div>
+
+
+
+        <h2 id="facebook-example">Sign in with Facebook Example</h2>
+        <a href="#facebook-example">Test</a>
+
+        <div class="container-login">
+            <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+            </fb:login-button>
+
+        </div>
+
+
+        <p> Our documentation is also here if you like more reading:
+            <a href="https://docs.liveramp.com/privacy-manager/en/integrating-social-logins-with-ats-js.html">Docs</a>
+        </p>
+
+        <div>
+            <h3>General ATS info</h1>
+                <p>ATS Enabled: <span id="atsEnabled"></span></p>
+                <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
+                <button onclick="checkForEnvelope()">Check for Envelope</button>
+                <button onclick="invalidateEnvelope()">Invalidate Envelope</button>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        async function checkForEnvelope() {
+
+            const envDisplay = document.getElementById("atsEnvelopeValue");
+            let displayVal = "";
+
+            if (typeof (ats) != 'undefined') {
+                var env = await ats.retrieveEnvelope();
+                if (typeof (env) != 'undefined') {
+                    displayVal = env;
+                } else {
+                    displayVal = "no envelope"
+                }
+
+            } else {
+                displayVal = "ats not defined"
+            }
+
+            envDisplay.textContent = displayVal;
+
+
+        }
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Doc loaded");
+            const form = document.getElementById('example-form');
+            form.addEventListener('submit', doSubmit);
+        });
+
+        function doSubmit(event) {
+            console.log(`Form Submitted! Time stamp: ${event.timeStamp}`);
+            event.preventDefault();
+        }
+
+        function checkATSStatus() {
+            let atsEnabled = document.getElementById('atsEnabled');
+            if (typeof (ats) == 'undefined') {
+                atsEnabled.textContent = "Not loaded"
+                return false
+            } else {
+                atsEnabled.textContent = "Loaded"
+                return true;
+            }
+        }
+
+        function invalidateEnvelope() {
+            ats.invalidateEnvelope();
+            console.log("Invalidated existing envelope and refreshing");
+            window.location.reload();
+        }
+
+
+    </script>
+
+
+    <!-- Google integration example -->
+    <script>
+
+        var GOOGLE_EMAIL;
+        // https://github.com/kjur/jsrsasign/wiki/Tutorial-for-JWT-verification
+        function parseJWTTokenFromGoogle(e) {
+            var sJWT = e.credential;
+            var headerObj = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(sJWT.split(".")[0]));
+            var payloadObj = KJUR.jws.JWS.readSafeJSONString(b64utoutf8(sJWT.split(".")[1]));
+            GOOGLE_EMAIL = payloadObj.email;
+            console.log("Email found from JWT Token:", GOOGLE_EMAIL);
+            var tuple = getHashedIdentifierTuple(GOOGLE_EMAIL);
+            setHashedIdentifiersForATSDirect(tuple.md5, tuple.sha1, tuple.sha256);
+        }
+
+
+    </script>
+
+    <!-- Facebook login integration -->
+    <script>
+
+        var FB_EMAIL;
+
+        function statusChangeCallback(response) {
+            console.log(response);
+            if (response.status === 'connected') {
+                fetchUserFromGraph();
+            } else {
+                // Not logged into your webpage or we are unable to tell.
+                console.error("Failed login");
+            }
+        }
+
+
+        function checkLoginState() {
+            FB.getLoginStatus((response) => {
+                statusChangeCallback(response);
+            });
+        }
+
+
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '765641174459643',
+                cookie: true,
+                xfbml: true,
+                version: 'v14.0'
+            });
+
+            FB.getLoginStatus((response) => {
+                statusChangeCallback(response);
+            });
+        };
+
+
+        function fetchUserFromGraph() {
+            FB.api('/me', (response) => {
+                console.log("Response:", response);
+                FB_EMAIL = response.email;
+                console.log("Email found from FB Graph:", FB_EMAIL);
+                var tuple = getHashedIdentifierTuple(FB_EMAIL);
+                setHashedIdentifiersForATSDirect(tuple.md5, tuple.sha1, tuple.sha256);
+            });
+        }
+    </script>
+
+    <!-- Hashing for envelope direct input -->
+    <script>
+
+        // Here's an example of how you might quickly hash your identifiers.
+        function getHashedIdentifierTuple(rawIdentifier) {
+
+            let hashedIDTuple = {};
+
+            if (typeof (rawIdentifier) != "undefined" && rawIdentifier.length > 0) {
+                hashedIDTuple = {
+                    md5: new Hashes.MD5().hex(rawIdentifier),
+                    sha1: new Hashes.SHA1().hex(rawIdentifier),
+                    sha256: new Hashes.SHA256().hex(rawIdentifier)
+                }
+            }
+
+            return hashedIDTuple;
+        }
+
+
+        // Here's an example of using "setAdditionalData" - this will in turn trigger
+        // a request to our identity API service for a RampID envelope.
+        function setHashedIdentifiersForATSDirect(identifierMD5, identifierSHA1, identifierSHA256) {
+            atsenvelopemodule.setAdditionalData({
+                'type': 'emailHashes',
+                'id': [identifierMD5, identifierSHA1, identifierSHA256]
+            });
+        }
+
+    </script>
+
+
+</body>
+
+</html>
