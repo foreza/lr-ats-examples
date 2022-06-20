@@ -244,7 +244,7 @@
 
 
         function fetchUserFromGraph() {
-            FB.api('/me', (response) => {
+            FB.api('/me?fields=email,name', (response) => {
                 console.log("Response:", response);
                 FB_EMAIL = response.email;
                 console.log("Email found from FB Graph:", FB_EMAIL);
