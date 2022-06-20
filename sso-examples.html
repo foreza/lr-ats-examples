@@ -7,37 +7,27 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="" />
 
-
-    <meta name="google-signin-client_id"
-        content="454560084516-akdmbr8tr52bj5l5ru9hev4h2inslgn9.apps.googleusercontent.com">
-
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 
-    <!-- Load this as close to the top of the document as possible -->
-    <!-- <script async defer src="https://launchpad-wrapper.privacymanager.io/0ac9abb3-e561-4f79-9385-9bb06f8aa49a/launchpad-liveramp.js"></script> -->
-
     <!-- For local testing if you happen to be using localhost. Your envelope requests will fail if you run this on any other site. -->
-    <script
-        src="https://ats-wrapper.privacymanager.io/ats-modules/2bc4da3a-b0ae-49bb-8dbe-eb3d05ecbd38/ats.js"></script>
+    <script src="https://ats-wrapper.privacymanager.io/ats-modules/2bc4da3a-b0ae-49bb-8dbe-eb3d05ecbd38/ats.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-
+    <!-- Google JS SDK, loaded asynchronously -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-
-    <!-- Load the JS SDK asynchronously -->
+    <!-- FB JS SDK, loaded asynchronously -->
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
-
+    <!-- For parsing out JWT tokens sent back (by google) -->
     <script language="JavaScript" type="text/javascript"
         src="https://kjur.github.io/jsrsasign/jsrsasign-latest-all-min.js"></script>
 
-
-
-
+    <!-- For hashing (direct input required for SSO logins) -->
     <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+
+    <!-- Things have to be pretty -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
     <style>
         #example-form {
@@ -65,7 +55,7 @@
 
 <body>
     <div class="container">
-        <h1>Hello, ATS!</h1>
+        <h1>Hello, ATS! Let's login together.</h1>
 
         <h2>Sign in Directly (Example)</h2>
         <p>This example shows you how to capture your direct logins.</p>
@@ -82,12 +72,7 @@
         </form>
 
 
-
-
-
-
         <h2 id="google-example">Sign in with Google Example</h2>
-        <a href="#google-example">Test</a>
         <p>With GSI; Google will typically provide back a JWT token.</p>
         <p>Decrypt the JWT token to get the email, and then pass it to ATS with `setAdditionalData`</p>
         <p>Note: You won't be able to capture the email before form submission.</p>
@@ -104,16 +89,14 @@
         </div>
 
 
-
         <h2 id="facebook-example">Sign in with Facebook Example</h2>
-        <a href="#facebook-example">Test</a>
-
+        <p>FB is a 2 part process - first need to login (and ensure you ask for the email permission prior)</p>
+        <p>After that, you'll need to ensure that you retrieve the email in the FB.api(/me) call</p>
+        <p>You can do this explicitly by adding it to the fields, like so: `/me?fields=email,name`'</p>
         <div class="container-login">
             <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
             </fb:login-button>
-
         </div>
-
 
         <p> Our documentation is also here if you like more reading:
             <a href="https://docs.liveramp.com/privacy-manager/en/integrating-social-logins-with-ats-js.html">Docs</a>
