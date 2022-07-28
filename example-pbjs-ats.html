@@ -48,10 +48,20 @@
                         syncDelay: 4000              // X seconds after the first auction
                     }
                 });
+
+
+                pbjs.que.push(function () {
+                    pbjs.enableAnalytics([{
+                        provider: "atsAnalytics",
+                        options: {
+                            pid: "13669"
+                        }
+                    }])
+                });
             }
         }
 
-        function refreshPBJSUserId(){
+        function refreshPBJSUserId() {
             console.log("Refreshing...")
             pbjs.refreshUserIds();
         }
@@ -171,121 +181,108 @@
 
 <script>
 
-async function checkForEnvelope() {
-    const envDisplay = document.getElementById("atsEnvelopeValue");
-    let displayVal = "";
-    if (typeof (ats) != 'undefined') {
-        var env = await ats.retrieveEnvelope();
-        if (typeof (env) != 'undefined') {
-            displayVal = env;
+    async function checkForEnvelope() {
+        const envDisplay = document.getElementById(" atsEnvelopeValue"); let displayVal = ""; if (typeof (ats) != 'undefined'
+        ) {
+            var env = await ats.retrieveEnvelope(); if (typeof (env) != 'undefined') { displayVal = env; }
+            else { displayVal = "no envelope"; }
+        } else { displayVal = "ats not defined"; }
+        envDisplay.textContent = displayVal;
+    } function getHashedIdentifierTuple(rawIdentifier) {
+        let
+        hashedIDTuple = {}; if (typeof (rawIdentifier) != "undefined" && rawIdentifier.length > 0) {
+            hashedIDTuple = {
+                md5: new Hashes.MD5().hex(rawIdentifier),
+                sha1: new Hashes.SHA1().hex(rawIdentifier),
+                sha256: new Hashes.SHA256().hex(rawIdentifier)
+            }
+        }
+        return hashedIDTuple;
+    }
+
+
+    // Here's an example of using "setAdditionalData" - this will in turn trigger
+    // a request to our identity API service for a RampID envelope.
+    function setHashedIdentifiersForATSDirect(identifierMD5, identifierSHA1, identifierSHA256) {
+        atsenvelopemodule.setAdditionalData({
+            'type': 'emailHashes',
+            'id': [identifierMD5, identifierSHA1, identifierSHA256]
+        });
+        console.log("Set hashed identifiers")
+    }
+
+
+    // Example invocation call, we'll call this with our UI
+    function setATSDirectForIdentifier(cleartextEmail) {
+        let tuple = getHashedIdentifierTuple(cleartextEmail);
+        setHashedIdentifiersForATSDirect(tuple.md5, tuple.sha1, tuple.sha256);
+    }
+
+
+    function onclick_doDirectATSCall() {
+        setATSDirectForIdentifier("jason.chiu@liveramp.com");
+    }
+
+
+    function checkATSStatus() {
+        let atsEnabled = document.getElementById('atsEnabled');
+        if (typeof (ats) == 'undefined') {
+            atsEnabled.textContent = "Not loaded";
+            return false;
         } else {
-            displayVal = "no envelope";
-        }
-    } else {
-        displayVal = "ats not defined";
-    }
-    envDisplay.textContent = displayVal;
-}
-
-
-function getHashedIdentifierTuple(rawIdentifier) {
-    let hashedIDTuple = {};
-    if (typeof (rawIdentifier) != "undefined" && 
-    rawIdentifier.length > 0) {
-        hashedIDTuple = {
-            md5: new Hashes.MD5().hex(rawIdentifier),
-            sha1: new Hashes.SHA1().hex(rawIdentifier),
-            sha256: new Hashes.SHA256().hex(rawIdentifier)
+            atsEnabled.textContent = "Loaded";
+            return true;
         }
     }
-    return hashedIDTuple;
-}
 
 
-// Here's an example of using "setAdditionalData" - this will in turn trigger
-// a request to our identity API service for a RampID envelope.
-function setHashedIdentifiersForATSDirect(identifierMD5, identifierSHA1, identifierSHA256) {
-    atsenvelopemodule.setAdditionalData({
-        'type': 'emailHashes',
-        'id': [identifierMD5, identifierSHA1, identifierSHA256]
-    });
-    console.log("Set hashed identifiers")
-}
+    function getATSEnvelopeModuleInfo() {
+        let moduleInfoKVP = {};
 
+        let envInfo = ats.outputCurrentConfiguration().ENVELOPE_MODULE_INFO;
+        let envConfig = envInfo.ENVELOPE_MODULE_CONFIG;
 
-// Example invocation call, we'll call this with our UI
-function setATSDirectForIdentifier(cleartextEmail) {
-    let tuple = getHashedIdentifierTuple(cleartextEmail);
-    setHashedIdentifiersForATSDirect(tuple.md5, tuple.sha1, tuple.sha256);
-}
+        // Populate the object here with a readable unique key and the value
+        moduleInfoKVP["PID"] = envConfig.placementID;
+        // TODO: do more
 
-
-function onclick_doDirectATSCall() {
-    setATSDirectForIdentifier("jason.chiu@liveramp.com");
-}
-
-
-function checkATSStatus() {
-    let atsEnabled = document.getElementById('atsEnabled');
-    if (typeof (ats) == 'undefined') {
-        atsEnabled.textContent = "Not loaded";
-        return false;
-    } else {
-        atsEnabled.textContent = "Loaded";
-        return true;
+        return moduleInfoKVP;
     }
-}
 
 
-function getATSEnvelopeModuleInfo() {
-    let moduleInfoKVP = {};
-
-    let envInfo = ats.outputCurrentConfiguration().ENVELOPE_MODULE_INFO;
-    let envConfig = envInfo.ENVELOPE_MODULE_CONFIG;
-
-    // Populate the object here with a readable unique key and the value
-    moduleInfoKVP["PID"] = envConfig.placementID;
-    // TODO: do more
-
-    return moduleInfoKVP;
-}
-
-
-function renderModuleInfoObjToTable(infoObj, tableRef) {
-    var keyCollection = Object.keys(infoObj);
-    for (var i = 0; i < keyCollection.length; ++i) {
-        let tRow = document.createElement("tr"); let
-            tKey = document.createElement("td"); tKey.textContent = keyCollection[i]; let
-                tData = document.createElement("td"); tData.textContent = infoObj[keyCollection];
-        tRow.appendChild(tKey); tRow.appendChild(tData); tableRef.appendChild(tRow);
-    }
-}
-
-</script>
-
-
-
-<!-- My own script to set PBJS config (hacky, 1000 after) -->
-<script>
-
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Document loaded");
-    // Prevent submit button from redirecting
-    document.getElementById("directSubmit").addEventListener("click",
-        (e) => e.preventDefault());
-    setTimeout(() => {
-        console.log("Delayed for 1 second:")
-        setPBJSConfigForLiveRampATS();
-        googletag.cmd.push(() => googletag.display('div-1'));
-        if (checkATSStatus()) {
-            let envInfoTableRef = document.getElementById("envelope-module-info");
-            envModuleInfo = getATSEnvelopeModuleInfo();
-            renderModuleInfoObjToTable(envModuleInfo, envInfoTableRef);
+    function renderModuleInfoObjToTable(infoObj, tableRef) {
+        var keyCollection = Object.keys(infoObj);
+        for (var i = 0; i < keyCollection.length; ++i) {
+            let tRow = document.createElement("tr"); let
+                tKey = document.createElement("td"); tKey.textContent = keyCollection[i]; let
+                    tData = document.createElement("td"); tData.textContent = infoObj[keyCollection];
+            tRow.appendChild(tKey); tRow.appendChild(tData); tableRef.appendChild(tRow);
         }
-    }, 1000);
-});
+    } </script>
 
-</script>
+
+
+                            <!-- My own script to set PBJS config (hacky, 1000 after) -->
+                            <script>
+
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    console.log("Document loaded");
+                                    // Prevent submit button from redirecting
+                                    document.getElementById("directSubmit").addEventListener("click",
+                                        (e) => e.preventDefault());
+                                    setTimeout(() => {
+                                        console.log("Delayed for 1 second:")
+                                        setPBJSConfigForLiveRampATS();
+                                        googletag.cmd.push(() => googletag.display('div-1'));
+                                        if (checkATSStatus()) {
+                                            let envInfoTableRef = document.getElementById("envelope-module-info");
+                                            envModuleInfo = getATSEnvelopeModuleInfo();
+                                            renderModuleInfoObjToTable(envModuleInfo, envInfoTableRef);
+                                        }
+                                    }, 1000);
+                                });
+
+                            </script>
 </body>
 
 </html>
