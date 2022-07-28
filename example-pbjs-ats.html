@@ -108,6 +108,7 @@
 <!-- Prebid Provided example implementation -->
 <script>
     try {
+        var slot1;
         var sizes = [[300, 250]];
         var PREBID_TIMEOUT = 1000;
         var FAILSAFE_TIMEOUT = 3000;
@@ -126,6 +127,19 @@
                 }
             }]
         }];
+
+        function refreshBid() {
+                pbjs.que.push(function() {
+                    pbjs.requestBids({
+                        timeout: PREBID_TIMEOUT,
+                        adUnitCodes: ['/19968336/header-bid-tag-1'],
+                        bidsBackHandler: function() {
+                            pbjs.setTargetingForGPTAsync(['/19968336/header-bid-tag-1']);
+                            googletag.pubads().refresh([slot1]);
+                        }
+                    });
+                });
+            }
 
         // ======== DO NOT EDIT BELOW THIS LINE =========== //
         var googletag = googletag || {};
@@ -164,7 +178,7 @@
         }, FAILSAFE_TIMEOUT);
 
         googletag.cmd.push(function () {
-            googletag.defineSlot('/19968336/header-bid-tag-1', sizes, 'div-1')
+            slot1 = googletag.defineSlot('/19968336/header-bid-tag-1', sizes, 'div-1')
                 .addService(googletag.pubads());
             googletag.pubads().enableSingleRequest();
             googletag.enableServices();
