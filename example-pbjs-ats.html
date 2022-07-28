@@ -15,8 +15,10 @@
 
     <!-- Included a basic version of prebid with just the LiveRamp envelope module (identityLink) + ATS Analytics -->
     <script async src="https://www.googletagservices.com/tag/js/gpt.js"></script>
-    <script async src="https://cdn.jsdelivr.net/npm/prebid.js@latest/dist/not-for-prod/prebid.js"></script>
-    <!-- <script src="https://jasonthechiu.com/lr-ats-examples/scripts/prebid6.18.0.js"></script> -->
+    <!-- <script async src="https://cdn.jsdelivr.net/npm/prebid.js@latest/dist/not-for-prod/prebid.js"></script> -->
+
+    <script async src="https://cdn.jsdelivr.net/npm/prebid.js@6.22.0/dist/not-for-prod/prebid.js"></script>
+
 
     <!-- We RECOMMEND using a publicly auditable hashing implementation so you know what you're getting into! -->
     <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
@@ -49,15 +51,6 @@
                     }
                 });
 
-
-                pbjs.que.push(function () {
-                    pbjs.enableAnalytics([{
-                        provider: "atsAnalytics",
-                        options: {
-                            pid: "13669"
-                        }
-                    }])
-                });
             }
         }
 
@@ -145,11 +138,15 @@
         pbjs.que = pbjs.que || [];
 
         pbjs.que.push(function () {
+            pbjs.enableAnalytics([{
+                provider: "atsAnalytics",
+                options: { pid: "13669" }}]);
             pbjs.addAdUnits(adUnits);
             pbjs.requestBids({
                 bidsBackHandler: initAdserver,
                 timeout: PREBID_TIMEOUT
             });
+
         });
 
         function initAdserver() {
