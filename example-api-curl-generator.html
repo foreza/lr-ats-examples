@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>ATS Form Submit Detect Example</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+
+    <!-- "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js" -->
+    <script type="importmap">
+        { 
+            "imports": {
+                "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Hello, ATS!</h1>
+        <p>This example generates you a quick cURL command for testing our API.</p>
+        <p>Next up - testing directly from this page.</p>
+
+        <div id="app">
+            <div>
+                <label for="email">Your Email: </label>
+                <input v-model="email" type="text" required />
+
+                <label for="pid">Your PID: </label>
+                <input v-model="pid" type="number" required />
+
+                <label for="origin">Your Origin: </label>
+                <input v-model="origin" placeholder="https://liveramp.com" type="text" required />
+            </div>
+            <div>
+                <p>MD5: <span>{{ hashmd5(email) }} </span></p>
+                <p>SHA1: <span>{{ hashsha1(email) }}</span></p>
+                <p>SHA256: <span>{{ hashsha256(email) }}</span></p>
+                <h3> Sample cURL: </h3>
+                <p><button class="btn" @click="copyCommandToClipboard()">Copy to clipboard</button></p>
+                <textarea  class="materialize-textarea" readonly>{{createCommand(email,pid,origin)}}</textarea>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+<script type="module">
+    import { createApp } from 'vue'
+
+    var md5hasher = new Hashes.MD5();
+    var sha1hasher = new Hashes.SHA1();
+    var sha256hasher = new Hashes.SHA256();
+    var baseURL = "https://api.rlcdn.com/api/identity/envelope?";
+    var commandPrefix = "curl --location --request GET";
+    var commandSuffix = "\\" + "\n--header 'Origin: ";
+
+    createApp({
+        data() {
+            return {
+                email: 'your@email',
+                pid: '13669',
+                origin: 'https://liveramp.com',
+            }
+        },
+        methods: {
+            hashmd5(i) { return md5hasher.hex(i); },
+            hashsha1(i) { return sha1hasher.hex(i); },
+            hashsha256(i) { return sha256hasher.hex(i); },
+            // Example of how you might construct the url
+            createCommand(email, pid, origin) {
+                return `${commandPrefix} '${baseURL}pid=${pid}&it=4&iv=${this.hashmd5(email)}&it=4&iv=${this.hashsha1(email)}&it=4&iv=${this.hashsha256(email)}' ${commandSuffix} ${origin}'`
+            },
+            copyCommandToClipboard() {
+                var tCmd = this.createCommand(this.email, this.pid, this.origin)
+                navigator.clipboard.writeText(tCmd).then(
+                    () => { M.toast({ html: 'Copied to clipboard!' }) },
+                    () => { M.toast({ html: 'Failed to copy to clipboard' }) },)
+            }
+        },
+        mounted() {
+            // methods can be called in lifecycle hooks, or other methods!
+            this.hashmd5(),
+                this.hashsha1(),
+                this.hashsha256(),
+                this.createCommand()
+        }
+    }).mount('#app')
+</script>
