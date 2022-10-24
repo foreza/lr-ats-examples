@@ -15,8 +15,10 @@
 
         <h1>Hello, ATS!</h1>
         <p>We'll test the inclusion of the Sizmek tag several different ways.</p>
+        <p>If JS is disabled; the tag should auto-load.</p>
 
         <button onclick="injectScript()" class="btn">Inject Script</button>
+        
 
         <!-- In case JS is disabled, fallback? -->
         <noscript>
@@ -30,17 +32,25 @@
 
 <script>
 
+
     
     // Injects the Sizmek script
     // Note: Took out GDPR to make this simpler
     // Also assumed timestamp is being used as a cachebuster, so Date.now() should suffice as a random number
-    function injectScript() {
+    var injectScript = () => {
+
+        // var CONSENT_STRING = "CPhZmzAPhZmzAADAAAENCZCAAP_AAH6AAAAABGAAAAAAAAAAYEBhAAIAAIAAAEAYYAoABgAOQBEAEUAJgAYQAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A";
+        var GDPR_CONSENT_68 =0;
+        var GDPR = 0;
 
         var t = document.createElement("script");
         var d = Date.now();
         document.body.appendChild(t);
-        t.src = `https://bs.serving-sys.com/Serving/adServer.bs?c=28&cn=display&pli=1078484239&w=300&h=250&ord=${d}&ifrm=-1&z=10000`;
-    }
+        t.src = `https://bs.serving-sys.com/Serving/adServer.bs?c=28&cn=display&gdpr=${GDPR}&gdpr_consent=${GDPR_CONSENT_68}&pli=1078484239&w=300&h=250&ord=${d}&ifrm=-1&z=10000`;
+    };
+
+    injectScript();
+    
 
 
 </script>
