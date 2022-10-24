@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sizmek - ATS POC</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Hello, ATS!</h1>
+        <p>We'll test the inclusion of the Sizmek tag several different ways.</p>
+
+        <button onclick="injectScript()" class="btn">Inject Script</button>
+        <button onclick="injectImg()" class="btn">Inject Image w/ href</button>
+
+    </div>
+</body>
+
+
+<script>
+
+    
+    // Injects the Sizmek script
+    // Note: Took out GDPR to make this simpler
+    // Also assumed timestamp is being used as a cachebuster, so Date.now() should suffice as a random number
+    function injectScript() {
+
+        var t = document.createElement("script");
+        var d = Date.now();
+        document.body.appendChild(t);
+        t.src = `https://bs.serving-sys.com/Serving/adServer.bs?c=28&cn=display&pli=1078484239&w=300&h=250&ord=${d}&ifrm=-1&z=10000`;
+    }
+
+
+    function injectImg() {
+
+        var ns = document.createElement("noscript");
+
+        var a = document.createElement("a");
+        a.target="_blank";
+        a.href= `https://bs.serving-sys.com/Serving/adServer.bs?cn=brd&pli=1078484239&Page=&Pos=-1602365261`
+
+        var i = document.createElement("img");
+        i.border=0;
+        i.width=300;
+        i.height=250;
+        i.src=`https://bs.serving-sys.com/Serving/adServer.bs?c=8&cn=display&pli=1078484239&Page=&Pos=-1602365261`;
+
+        a.appendChild(i);
+        ns.appendChild(a);
+        document.body.appendChild(ns);
+    }
+
+
+
+</script>
+</html>
