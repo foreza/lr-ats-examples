@@ -17,8 +17,13 @@
         <p>We'll test the inclusion of the Sizmek tag several different ways.</p>
 
         <button onclick="injectScript()" class="btn">Inject Script</button>
-        <button onclick="injectImg()" class="btn">Inject Image w/ href</button>
 
+        <!-- In case JS is disabled, fallback? -->
+        <noscript>
+            <a href="https://bs.serving-sys.com/Serving/adServer.bs?cn=brd&pli=1078484239&gdpr=${GDPR}&gdpr_consent=${GDPR_CONSENT_68}&Page=&Pos=-1602365261" target="_blank">
+            <img src="https://bs.serving-sys.com/Serving/adServer.bs?c=8&cn=display&pli=1078484239&gdpr=${GDPR}&gdpr_consent=${GDPR_CONSENT_68}&Page=&Pos=-1602365261" border=0 width=300 height=250></a>
+        </noscript>
+            
     </div>
 </body>
 
@@ -36,27 +41,6 @@
         document.body.appendChild(t);
         t.src = `https://bs.serving-sys.com/Serving/adServer.bs?c=28&cn=display&pli=1078484239&w=300&h=250&ord=${d}&ifrm=-1&z=10000`;
     }
-
-
-    function injectImg() {
-
-        var ns = document.createElement("noscript");
-
-        var a = document.createElement("a");
-        a.target="_blank";
-        a.href= `https://bs.serving-sys.com/Serving/adServer.bs?cn=brd&pli=1078484239&Page=&Pos=-1602365261`
-
-        var i = document.createElement("img");
-        i.border=0;
-        i.width=300;
-        i.height=250;
-        i.src=`https://bs.serving-sys.com/Serving/adServer.bs?c=8&cn=display&pli=1078484239&Page=&Pos=-1602365261`;
-
-        a.appendChild(i);
-        ns.appendChild(a);
-        document.body.appendChild(ns);
-    }
-
 
 
 </script>
