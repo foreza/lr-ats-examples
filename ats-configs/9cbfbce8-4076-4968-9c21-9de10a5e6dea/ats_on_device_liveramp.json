@@ -1,0 +1,32 @@
+{
+	"configVersion": 2,
+	"appId": "9cbfbce8-4076-4968-9c21-9de10a5e6dea",
+	"pId": 1320,
+	"preferredATS": "automatic",
+	"bloomFilters": [{
+		"id": "421eb3dc-630e-11ec-90d6-0242ac120003"
+	}],
+	"syncConfiguration": {
+		"isAutomaticSyncEnabled": true,
+		"maximumStorageAllowed": 0,
+		"isBackgroundSyncEnabled": false,
+		"preferredSyncTime": "duringInactiveHours",
+		"useMobileNetwork": false
+	},
+	"geoTargeting": {
+		"ccpa": {
+			"allCountries": false,
+			"allStates": true,
+			"countries": ["US"],
+			"states": []
+		}
+	},
+	"isLoggingEnabled": false,
+	"envelope": {
+		"expirationTime": 1296000000,
+		"minimumRefreshTime": 900000
+	},
+	"atsEnabledCountries": ["US"],
+	"placement": "dce22875-ae58-4d3e-8fb3-ce704ec5c3b2",
+	"isPlacementApproved": true
+}
