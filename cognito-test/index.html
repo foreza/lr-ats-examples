@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>AWS Cognito User Pool Example</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+
+    <!-- For style/flair -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    
+    <!-- Required for AWS SDK + Cognito -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1271.0.min.js"></script>
+    
+    <!-- TODO: Need to preferably build this script yourself  -->
+    <!-- https://github.com/aws-amplify/amplify-js/tree/main/packages/amazon-cognito-identity-js -->
+    <script src="./scripts/amazon-cognito-identity.js"></script>
+
+
+    <!-- Example implementation of refreshUser and loginUser -->
+    <script>
+
+        // Example: After you perform account switcher; use the old refresh token to refresh the user
+        // Pass in the cognito user and the token associated with the user
+        // Returns a JSON object with the 3 relevant tokens
+        function refreshUserWithToken(cognitoUser, refreshToken, callbackFunction) {
+
+            cognitoUser.refreshSession(refreshToken, (err, session) => {
+                    if (err) {
+                        console.log(err);
+                        callbackFunction(false, cognitoUser, err);
+                    } else {
+                        console.log("updated session:", session);
+
+                        let newSessionTokens = {
+                            "id" : session.getIdToken().getJwtToken(),
+                        "access" : session.getAccessToken().getJwtToken(),
+                        "refresh": session.refreshToken // note - refresh token is a token, not a JWT token                        
+                        }
+
+                        callbackFunction(true, cognitoUser, newSessionTokens);
+                    }
+                });
+        }
+
+        // Accepts the following 
+        function loginForUser(username, password, poolId, clientId, callbackFunction) {
+
+            var authenticationData = {
+                Username: username,
+                Password: password,
+            };
+
+            var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+                authenticationData
+            );
+
+            var poolData = {
+                UserPoolId: myRegionPoolID, // Note - this is concatenation of region + poolID
+                ClientId: clientId,
+            };
+
+            var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+            var userData = {
+                Username: username,
+                Pool: userPool,
+            };
+
+            // Create a temp cognito user; return it regardless of success/failure
+            var myCognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+        
+            myCognitoUser.authenticateUser(authenticationDetails, {
+
+                onSuccess: function (result) {
+
+                    var myResult = result;
+                    var accessToken = result.getAccessToken().getJwtToken();
+
+                    // As an example - store these into a global variable.
+                    let sessionTokens = {
+                        "id" : result.getIdToken().getJwtToken(),
+                        "access" : result.getAccessToken().getJwtToken(),
+                        "refresh": result.refreshToken // note - refresh token is a token, not a JWT token
+                    }
+
+                    console.log("I have tokens!")
+                    callbackFunction(true, myCognitoUser, sessionTokens);
+                },
+
+                onFailure: function (err) {
+                    alert(err.message || JSON.stringify(err));
+                    callbackFunction(false, myCognitoUser, err.message);
+                },
+            });
+        }
+
+
+    </script>
+
+    <!-- Look at this! Sample workflow -->
+    <script>
+
+        // Console User Pool info 
+
+        // TODO: add these yourself
+        const myRegion = "";
+        const myPoolID = "";
+        const myClientID = "";
+        const myRegionPoolID = myRegion + "_" + myPoolID;
+
+        // TODO: add these yourself
+        const testUser = '';
+        const testPass = '';
+
+        // Store our JWT here locally
+        let myJWT = "";
+
+        // Store our current user
+        var myCognitoUser;
+
+        // Log in as a user on page load!
+        loginForUser(testUser, testPass, myPoolID, myClientID, (status, user, obj) => {
+
+            // We'll pass back the user no matter what.
+            myCognitoUser = user;
+            console.log("currentUser:", myCognitoUser);
+
+            if (status) {
+                myJWT = obj;
+                console.log("loginForUser:", myJWT);
+            } else {
+                console.error("loginForUser", obj);
+            }
+        });
+
+        // Example invocation
+        refreshUserWithToken(myCognitoUser, myJWT.refresh,(status, user, obj)  => {
+            
+            // We'll pass back the user no matter what.
+            myCognitoUser = user;
+            console.log("currentUser:", myCognitoUser);
+
+            if (status) {
+                myJWT = obj;
+                console.log("refreshUserWithToken:", myJWT);
+            } else {
+                console.error("refreshUserWithToken:", obj);
+            }
+        } )
+
+    </script>
+</head>
+
+<body>
+    <h1>There, not so lonely now</h1>
+
+</body>
+
+</html>
