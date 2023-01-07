@@ -45,16 +45,33 @@
     <p>This page features a sample LiveRamp eCST being loaded over google tag manager.</p>
     <p>Check your network inspector to see the API calls being made.</p>
 
-    <p>This will call: triggerECST("isAmazingUser=true,key2=value2");</p>
-    <p>Feel free to invoke this with different params/pdata to see the results.</p>
-    <button onclick="sampleECSTCall()">Call eCST (sample pdata)</button>
+    <div class="container">
+        <p>This will call: triggerECST("isAmazingUser=true,key2=value2");</p>
+        <p>Feel free to invoke this with different params/pdata to see the results.</p>
+        <button onclick="sampleECSTCall()">Call eCST (sample pdata)</button>
+    </div>
+
+    <div class="container">
+        <p>This will use ATS to send an example user email for an envelope</p>
+        <button onclick="setSampleEnvelope()">Set sample test envelope</button>
+    </div>
+    
 </body>
 
 
-<!-- // Assumes google tag manager is loaded, and that triggerECST is defined -->
+
 <script>
+    // Assumes google tag manager is loaded, and that triggerECST is defined
     function sampleECSTCall() {
         triggerECST("isAmazingUser=true,key2=value2");
+    }
+
+    // Assume ATS is loaded.
+    function setSampleEnvelope(){
+        atsenvelopemodule.setAdditionalData({
+            'type': 'email',
+            'id': "jason.chiu@liveramp.com"
+        });
     }
 </script>
 </html>
