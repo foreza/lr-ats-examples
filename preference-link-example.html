@@ -18,12 +18,6 @@
         // },"isLoaded");
 
 
-        __tcfapi('addEventListener', 2, (tcData, success) => {
-            // Always hide it unless we force it to show.
-            if (true) {
-                __tcfapi('toggleConsentTool', 2, () => { }, false);
-            }
-        }, "consentNoticeDisplayed");
 
     </script>
 
@@ -39,6 +33,13 @@
 
 
     <script>
+
+__tcfapi('addEventListener', 2, (tcData, success) => {
+            // Always hide it unless we force it to show.
+            console.log("try to hide")
+            __tcfapi('toggleConsentTool', 2, () => { console.log("try to hide - success?") }, false);
+        }, "consentNoticeDisplayed");
+
 
         // TODO: Fill this in. Use your own app key for this
         const instanceId = "2v1kavrkuz";
