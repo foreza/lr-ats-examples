@@ -13,9 +13,10 @@
     <script src="https://gdpr-wrapper.privacymanager.io/gdpr/13e87290-1c20-420b-8cc9-621c02f6409a/gdpr-liveramp.js">
 
         // TODO: Trigger something on load.
-        // __tcfapi('addEventListener', 2,(tcData, success) => {
-        //     alert("CMP Loaded")
-        // },"isLoaded");
+        __tcfapi('addEventListener', 2,(tcData, success) => {
+            console.log("Loaded!")
+        },"isLoaded");
+
 
 
 
@@ -34,11 +35,14 @@
 
     <script>
 
-__tcfapi('addEventListener', 2, (tcData, success) => {
-            // Always hide it unless we force it to show.
-            console.log("try to hide")
-            __tcfapi('toggleConsentTool', 2, () => { console.log("try to hide - success?") }, false);
-        }, "consentNoticeDisplayed");
+        // Force
+        __tcfapi('toggleConsentTool', 2, () => { console.log("try to hide - success?") }, false);
+
+        // __tcfapi('addEventListener', 2, (tcData, success) => {
+        //     // Always hide it unless we force it to show.
+        //     console.log("try to hide")
+        //     __tcfapi('toggleConsentTool', 2, () => { console.log("try to hide - success?") }, false);
+        // }, "consentNoticeDisplayed");
 
 
         // TODO: Fill this in. Use your own app key for this
