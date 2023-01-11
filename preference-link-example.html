@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,13 +9,22 @@
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 
     <!-- Privacy manager for web -->
-    <link rel="preload" href="https://gdpr.privacymanager.io/latest/gdpr.bundle.js" as="script" /> 
+    <link rel="preload" href="https://gdpr.privacymanager.io/latest/gdpr.bundle.js" as="script" />
     <script src="https://gdpr-wrapper.privacymanager.io/gdpr/13e87290-1c20-420b-8cc9-621c02f6409a/gdpr-liveramp.js">
 
         // TODO: Trigger something on load.
-    // __tcfapi('addEventListener', 2,(tcData, success) => {
-    //     alert("CMP Loaded")
-    // },"isLoaded");
+        // __tcfapi('addEventListener', 2,(tcData, success) => {
+        //     alert("CMP Loaded")
+        // },"isLoaded");
+
+
+        __tcfapi('addEventListener', 2, (tcData, success) => {
+            // Always hide it unless we force it to show.
+            if (true) {
+                __tcfapi('toggleConsentTool', 2, () => { }, false);
+            }
+        }, "consentNoticeDisplayed");
+
     </script>
 
 
@@ -25,55 +33,55 @@
 </head>
 
 <body>
-    <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a
-
- <!-- https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115 -->
-
-
- <script>
-
-    // TODO: Fill this in. Use your own app key for this
-    const instanceId = "2v1kavrkuz";
-    const accountId = "eplprod01";
-    const dataKey = "dd3d7f99-d3f9-4a0f-a8ea-0038ae7a7b41";                  
-
-    const prefLinkEndpoint = `https://data-api.${instanceId}.${accountId}.preferencelink.com/v1/subject-data/`;
+    <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a <!--
+        https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115
+        -->
 
 
+    <script>
 
-    async function fetchSubjectDataForIdentifier(identifier, callbackFunction) {
+        // TODO: Fill this in. Use your own app key for this
+        const instanceId = "2v1kavrkuz";
+        const accountId = "eplprod01";
+        const dataKey = "dd3d7f99-d3f9-4a0f-a8ea-0038ae7a7b41";
 
-        // TODO: more validation
-        let path = `${identifier}?info=all`;
-
-        var requestOptions = {
-            method: 'GET',
-            // mode: 'no-cors',
-            headers: {
-                'data-access-key': dataKey
-            },
-            redirect: 'follow'
-        };
-
-        requestURL = prefLinkEndpoint + path;
-        fetch(requestURL, requestOptions)
-        .then(response => response.text())
-        .then(result => {
-            // console.log(result);
-            callbackFunction(result);
-        })
-        .catch(error => console.log('error', error));
-    }
+        const prefLinkEndpoint = `https://data-api.${instanceId}.${accountId}.preferencelink.com/v1/subject-data/`;
 
 
-   
-    fetchSubjectDataForIdentifier("1984", (e) => console.log(e));
 
- </script>
+        async function fetchSubjectDataForIdentifier(identifier, callbackFunction) {
+
+            // TODO: more validation
+            let path = `${identifier}?info=all`;
+
+            var requestOptions = {
+                method: 'GET',
+                // mode: 'no-cors',
+                headers: {
+                    'data-access-key': dataKey
+                },
+                redirect: 'follow'
+            };
+
+            requestURL = prefLinkEndpoint + path;
+            fetch(requestURL, requestOptions)
+                .then(response => response.text())
+                .then(result => {
+                    // console.log(result);
+                    callbackFunction(result);
+                })
+                .catch(error => console.log('error', error));
+        }
+
+
+
+        fetchSubjectDataForIdentifier("1984", (e) => console.log(e));
+
+    </script>
 </body>
 
 </html>
-
+<!-- 
 curl 'https://data-api.2v1kavrkuz.eplprod01.preferencelink.com/v1/subject-data/1984?info=all' \
   -H 'sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"' \
   -H 'Accept: application/json, text/plain, */*' \
@@ -82,4 +90,4 @@ curl 'https://data-api.2v1kavrkuz.eplprod01.preferencelink.com/v1/subject-data/1
   -H 'sec-ch-ua-mobile: ?0' \
   -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36' \
   -H 'sec-ch-ua-platform: "macOS"' \
-  --compressed
+  --compressed -->
