@@ -10,17 +10,8 @@
 
     <!-- Privacy manager for web -->
     <link rel="preload" href="https://gdpr.privacymanager.io/latest/gdpr.bundle.js" as="script" />
-    <script src="https://gdpr-wrapper.privacymanager.io/gdpr/13e87290-1c20-420b-8cc9-621c02f6409a/gdpr-liveramp.js">
-
-        // TODO: Trigger something on load.
-        __tcfapi('addEventListener', 2,(tcData, success) => {
-            console.log("Loaded!")
-        },"isLoaded");
-
-
-
-
-    </script>
+    <script
+        src="https://gdpr-wrapper.privacymanager.io/gdpr/13e87290-1c20-420b-8cc9-621c02f6409a/gdpr-liveramp.js"></script>
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
@@ -28,19 +19,18 @@
 </head>
 
 <body>
-    <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a <!--
-        https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115
-        -->
+    <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a>
+    <!-- https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115 -->
 
 
     <script>
 
-        // Force
-        __tcfapi('toggleConsentTool', 2, () => { console.log("try to hide - success?") }, false);
+
+
 
         // __tcfapi('addEventListener', 2, (tcData, success) => {
         //     // Always hide it unless we force it to show.
-        //     console.log("try to hide")
+        //     console.log("[HEY] consentNoticeDisplayed")
         //     __tcfapi('toggleConsentTool', 2, () => { console.log("try to hide - success?") }, false);
         // }, "consentNoticeDisplayed");
 
@@ -80,12 +70,29 @@
 
 
 
-        fetchSubjectDataForIdentifier("1984", (e) => console.log(e));
+//        fetchSubjectDataForIdentifier("1984", (e) => console.log(e));
+
+    </script>
+
+    <script>
+
+        console.log("Instructing CMP to not show up.");
+        __tcfapi('addEventListener', 2, (tcData, success) => {
+            console.log("consentToolShouldBeShown event fired!");
+            __tcfapi('toggleConsentTool', 2, () => { console.log("CMP should be auto-hidden.") }, false);
+        }, "consentToolShouldBeShown");
+        
+
+        // setTimeout(() => {
+        //     __tcfapi('toggleConsentTool', 2, () => { console.log("(Set timeout) Try to hide - success?") }, false);
+        // }, 500);
 
     </script>
 </body>
 
 </html>
+
+
 <!-- 
 curl 'https://data-api.2v1kavrkuz.eplprod01.preferencelink.com/v1/subject-data/1984?info=all' \
   -H 'sec-ch-ua: "Not?A_Brand";v="8", "Chromium";v="108", "Google Chrome";v="108"' \
