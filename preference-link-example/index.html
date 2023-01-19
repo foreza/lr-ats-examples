@@ -21,8 +21,73 @@
 </head>
 
 <body>
-    <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a>
-    <!-- https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115 -->
+
+    <div class="container">
+
+        <h1>Hello there!</h1>
+        <p>This page features LiveRamp's GDPR CMP with the capability of storing data / pulling data from PL Enterprise.</p>
+        <p>This example assumes that PL Enterprise is the single source of truth for consent strings, and that a unique subject ID is being used. </p>
+        <p>Check your network inspector to see the API calls being made!</p>
+        <p>The example workflow is as follows:</p>
+        <ul>
+            <li>Once the page is loaded, we'll suppress the loading of the CMP dialog (regardless of whether we have consent already)</li>
+            <li>Call PL Enterprise for the subject ID once we have it.</li>
+            <li>If the subject ID does NOT yet exist within PL enterprise; show the CMP dialog.</li>
+            <li>If the subject ID EXISTS within PL enterprise, use the CMP SDK's ability to set the consent string manually (leveraging TCF IAB's libraries)</li>
+        </ul>
+
+    </div>
+
+    <div class="container">
+        <h3>General Consent info</h1>
+        <p>Current Consent String: <span id="consentStringDisplay"></span></p>
+        <p>Decoded Info: <span id="consentInfo"></span></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody id="consent-data-info">    
+            <!-- Dynamically generated -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
+        <h3>Set Subject Data</h3>
+        <p>This will call the Pl enterprise endpoint for setting data.</p>
+        <button onclick="setSubjectDataAndDisplayResult()">Set subject data (to current consentString)</button>
+    </div>
+
+    <div class="container">
+        <h3>Fetch Subject Data</h3>
+        <p>This will call the Pl enterprise endpoint for fetching data.</p>
+        <button onclick="fetchSubjectDataConsentAndDisplayResult()">Fetch subject data</button>
+    </div>
+
+    <div class="container">
+        <h3>Show the CMP</h3>
+        <p>Surface the CMP like this: </p>
+        <code>__tcfapi('showConsentManager');</code>
+        <p>Example: <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a></p>
+
+
+
+    <p>Couple additional notes:</p>
+    <ul>
+        <li>This showcases PL Enterprise, not PL. GDPR SDK syncs natively with PL today and doesn't require this additional work.</li>
+        <li>This is a working example; please don't abuse the (test) service!</li>
+        <li>The core JS implementation can be found here: <a href="https://github.com/foreza/lr-ats-examples/preference-link-example/src">Gitub JS src</a></li>
+        <li>This example relies on an additional IAB library core lib to decode/set the string: <a href="https://github.com/InteractiveAdvertisingBureau/iabtcf-es/tree/master/modules/core">IAB TCFv2 src</a></li>
+        <li>The consent string can also be set via query param if your setup supports that.</li>
+        <!-- https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115 -->
+        <li>The preference link enterprise API docs (data API) be found here: <a href="https://liveramp-sandbox.readme.io/preferencelink-enterprise/reference/options_subject-data-identifying-value">PL Enterprise Docs</a></li>
+    </ul>
+    
+
+</div>
 </body>
 
 </html>

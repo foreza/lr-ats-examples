@@ -24,9 +24,9 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /*!**********************!*\
   !*** ./src/index.js ***!
   \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _iabtcf_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @iabtcf/core */ \"./node_modules/@iabtcf/core/lib/mjs/index.js\");\n/* harmony import */ var _cmp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cmp */ \"./src/cmp.js\");\n/* harmony import */ var _pl_enterprise_sync__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pl-enterprise-sync */ \"./src/pl-enterprise-sync.js\");\n// Example core implementation\n\n\n\n\n\nconst encodedString = \"CPl0qlVPl0qlVL_AAAENCZCAAAIAAAAAAAAAAwwAQAwgAAAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A\"\n\n;(0,_cmp__WEBPACK_IMPORTED_MODULE_1__.pollForTCFThenRun)(_cmp__WEBPACK_IMPORTED_MODULE_1__.suppressPopup);\n(0,_cmp__WEBPACK_IMPORTED_MODULE_1__.pollForTCFThenRun)(_cmp__WEBPACK_IMPORTED_MODULE_1__.doesConsentExistLocally);\n\n// fetchSubjectDataConsentForIdentifier(\"1984\", (e) => console.log(e));\n(0,_pl_enterprise_sync__WEBPACK_IMPORTED_MODULE_2__.setSubjectDataConsentForIdentifier)(1984, encodedString, (e) => console.log(e));\n\n\n\n// Step 1: Do we have a TC string in storage already?\n\n// take an encoded TC string and decode into a TCModel\n\n\ntry {\n\n} catch (e) {\n  // Likely invalid TC string.\n  console.error(e);\n\n  // If there's no existing TC string\n}\nvar decodedTCModel = _iabtcf_core__WEBPACK_IMPORTED_MODULE_0__.TCString.decode(encodedString);\nconsole.log(decodedTCModel);\n\n\n//# sourceURL=webpack://preference-link-web-example/./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _iabtcf_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @iabtcf/core */ \"./node_modules/@iabtcf/core/lib/mjs/index.js\");\n/* harmony import */ var _cmp__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cmp */ \"./src/cmp.js\");\n/* harmony import */ var _pl_enterprise_sync__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pl-enterprise-sync */ \"./src/pl-enterprise-sync.js\");\n/* module decorator */ module = __webpack_require__.hmd(module);\n// Example core implementation\n\n\n\n\n// Example string\nconst encodedString = \"CPl0qlVPl0qlVL_AAAENCZCAAAIAAAAAAAAAAwwAQAwgAAAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A\"\n\n;(0,_cmp__WEBPACK_IMPORTED_MODULE_1__.pollForTCFThenRun)(_cmp__WEBPACK_IMPORTED_MODULE_1__.suppressPopup);\n(0,_cmp__WEBPACK_IMPORTED_MODULE_1__.pollForTCFThenRun)(_cmp__WEBPACK_IMPORTED_MODULE_1__.doesConsentExistLocally);\n\n// fetchSubjectDataConsentForIdentifier(\"1984\", (e) => console.log(e));\n\nwindow.setSubjectDataAndDisplayResult = (obj) => {\n  // TODO: something with obj\n  (0,_pl_enterprise_sync__WEBPACK_IMPORTED_MODULE_2__.setSubjectDataConsentForIdentifier)(1984, encodedString, (e) => console.log(e));\n}\n\nwindow.fetchSubjectDataConsentAndDisplayResult = (obj) => {\n  // TODO: something with obj\n  ;(0,_pl_enterprise_sync__WEBPACK_IMPORTED_MODULE_2__.fetchSubjectDataConsentForIdentifier)(1984, (e) => console.log(e));\n}\n\n// TODO: Find a better way to expose stuff.\nmodule.exports = {\n  \"window.setSubjectDataAndDisplayResult\": function(obj) {},\n  \"window.fetchSubjectDataConsentAndDisplayResult\": function(obj) {},\n};\n\n\n// Step 1: Do we have a TC string in storage already?\n\n// take an encoded TC string and decode into a TCModel\n\n\ntry {\n\n} catch (e) {\n  // Likely invalid TC string.\n  console.error(e);\n\n  // If there's no existing TC string\n}\nvar decodedTCModel = _iabtcf_core__WEBPACK_IMPORTED_MODULE_0__.TCString.decode(encodedString);\nconsole.log(decodedTCModel);\n\n\n//# sourceURL=webpack://preference-link-web-example/./src/index.js?");
 
 /***/ }),
 
@@ -36,7 +36,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _iab
   \***********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"fetchSubjectDataConsentForIdentifier\": () => (/* binding */ fetchSubjectDataConsentForIdentifier),\n/* harmony export */   \"prefLinkEndpoint\": () => (/* binding */ prefLinkEndpoint),\n/* harmony export */   \"setSubjectDataConsentForIdentifier\": () => (/* binding */ setSubjectDataConsentForIdentifier)\n/* harmony export */ });\n// TODO: Fill this in. Use your own keys and instance ID / account ID for this\nconst instanceId = \"2v1kavrkuz\"; // \"TODO\";\nconst accountId = \"eplprod01\"; // \"TODO\";\nconst dataKey = \"dd3d7f99-d3f9-4a0f-a8ea-0038ae7a7b412\"; // \"TODO\";\n\n// TODO: Remove this\n// export const instanceId = \"2v1kavrkuz\";\n// export const accountId = \"eplprod01\";\n// export const dataKey = \"dd3d7f99-d3f9-4a0f-a8ea-0038ae7a7b41\";\n\n// Your PL Enterprise endpoint\nconst prefLinkEndpoint = `https://data-api.${instanceId}.${accountId}.preferencelink.com/v1/subject-data/`;\n\nasync function fetchSubjectDataConsentForIdentifier(identifier, callbackFunction) {\n\n    let path = `${identifier}?info=all`;\n\n    var requestOptions = {\n        method: 'GET',\n        headers: {\n            'data-access-key': dataKey\n        },\n        redirect: 'follow'\n    };\n\n    var requestURL = prefLinkEndpoint + path;\n\n    fetch(requestURL, requestOptions)\n        .then(response => response.json())\n        .then(result => {\n            callbackFunction(result.data.consentString);\n        })\n        .catch(error => console.log('error', error));\n}\n\n// This assumes a\nasync function setSubjectDataConsentForIdentifier(identifier, consentString, callbackFunction) {\n\n    let path = `/`;\n\n    // TODO: Sanitize/check data types...\n    var data = {\n        \"consentString\": consentString,\n        \"custom_user_id\": identifier,\n        \"identifying_field\": \"custom_user_id\"\n    }\n\n    var requestOptions = {\n        method: 'POST',\n        headers: {\n            'data-access-key': dataKey,\n            'Content-Type': 'application/json'\n        },\n        redirect: 'follow',\n        body: JSON.stringify(data)\n    };\n\n    var requestURL = prefLinkEndpoint + path;\n    fetch(requestURL, requestOptions)\n        .then(response => response.json())\n        .then(result => {\n            console.log(\"POST success with result:\", result);\n            callbackFunction(result);\n        })\n        .catch(error => console.log('error', error));\n}\n\n\n\n\n\n\n\n//# sourceURL=webpack://preference-link-web-example/./src/pl-enterprise-sync.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"fetchSubjectDataConsentForIdentifier\": () => (/* binding */ fetchSubjectDataConsentForIdentifier),\n/* harmony export */   \"prefLinkEndpoint\": () => (/* binding */ prefLinkEndpoint),\n/* harmony export */   \"setSubjectDataConsentForIdentifier\": () => (/* binding */ setSubjectDataConsentForIdentifier)\n/* harmony export */ });\n// TODO: Use your own keys and instance ID / account ID for this\nconst instanceId = \"2v1kavrkuz\"; // \"TODO\";\nconst accountId = \"eplprod01\"; // \"TODO\";\nconst dataKey = \"dd3d7f99-d3f9-4a0f-a8ea-0038ae7a7b41\"; // \"TODO\";\n\n// To run this; create your own .env file with the following:\n// INSTANCE_ID=\"\"\n// ACCOUNT_ID=\"\"\n// DATA_KEY=\"\"\n\n\n// Your PL Enterprise endpoint\nconst prefLinkEndpoint = `https://data-api.${instanceId}.${accountId}.preferencelink.com/v1/subject-data/`;\n\nasync function fetchSubjectDataConsentForIdentifier(identifier, callbackFunction) {\n\n    let path = `${identifier}?info=all`;\n\n    var requestOptions = {\n        method: 'GET',\n        headers: {\n            'data-access-key': dataKey\n        },\n        redirect: 'follow'\n    };\n\n    var requestURL = prefLinkEndpoint + path;\n\n    fetch(requestURL, requestOptions)\n        .then(response => response.json())\n        .then(result => {\n            callbackFunction(result.data.consentString);\n        })\n        .catch(error => console.log('error', error));\n}\n\n// This assumes a\nasync function setSubjectDataConsentForIdentifier(identifier, consentString, callbackFunction) {\n\n    let path = `/`;\n\n    // TODO: Sanitize/check data types...\n    var data = {\n        \"consentString\": consentString,\n        \"custom_user_id\": identifier,\n        \"identifying_field\": \"custom_user_id\"\n    }\n\n    var requestOptions = {\n        method: 'POST',\n        headers: {\n            'data-access-key': dataKey,\n            'Content-Type': 'application/json'\n        },\n        redirect: 'follow',\n        body: JSON.stringify(data)\n    };\n\n    var requestURL = prefLinkEndpoint + path;\n    fetch(requestURL, requestOptions)\n        .then(response => response.json())\n        .then(result => {\n            console.log(\"POST success with result:\", result);\n            callbackFunction(result);\n        })\n        .catch(error => console.log('error', error));\n}\n\n\n\n\n\n\n\n//# sourceURL=webpack://preference-link-web-example/./src/pl-enterprise-sync.js?");
 
 /***/ }),
 
@@ -604,13 +604,16 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
-/******/ 			// no module.id needed
-/******/ 			// no module.loaded needed
+/******/ 			id: moduleId,
+/******/ 			loaded: false,
 /******/ 			exports: {}
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
 /******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
 /******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
@@ -626,6 +629,21 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/harmony module decorator */
+/******/ 	(() => {
+/******/ 		__webpack_require__.hmd = (module) => {
+/******/ 			module = Object.create(module);
+/******/ 			if (!module.children) module.children = [];
+/******/ 			Object.defineProperty(module, 'exports', {
+/******/ 				enumerable: true,
+/******/ 				set: () => {
+/******/ 					throw new Error('ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + module.id);
+/******/ 				}
+/******/ 			});
+/******/ 			return module;
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -649,7 +667,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
 /******/ 	
 /******/ })()
