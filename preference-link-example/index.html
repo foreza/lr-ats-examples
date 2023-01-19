@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Preference Link Enterprise - Example</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <!-- Privacy manager for web -->
+    <link rel="preload" href="https://gdpr.privacymanager.io/latest/gdpr.bundle.js" as="script" />
+    <script async defer src="https://gdpr-wrapper.privacymanager.io/gdpr/13e87290-1c20-420b-8cc9-621c02f6409a/gdpr-liveramp.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- TCF IAB v2 library + CMP implementation, built with webpack -->
+    <!-- See the source on github for the implementaion -->
+    <script src="./dist/main.js"></script>
+</head>
+
+<body>
+    <a onclick="__tcfapi('showConsentManager')" href="javascript:void(0);">Privacy Settings</a>
+    <!-- https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115 -->
+</body>
+
+</html>
