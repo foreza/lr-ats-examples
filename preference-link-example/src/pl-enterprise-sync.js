@@ -29,7 +29,13 @@ export async function fetchSubjectDataConsentForIdentifier(identifier, callbackF
     fetch(requestURL, requestOptions)
         .then(response => response.json())
         .then(result => {
-            callbackFunction(result.data.consentString);
+            if (result.data && result.data.consentString) {
+                console.log("Found subject data in PL with consent")
+                callbackFunction(result.data.consentString);
+            } else {
+                console.log("Did not find subject data in PL, or consent not recorded in PL")
+                callbackFunction(undefined);
+            }
         })
         .catch(error => console.log('error', error));
 }

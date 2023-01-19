@@ -28,43 +28,40 @@
         <p>This page features LiveRamp's GDPR CMP with the capability of storing data / pulling data from PL Enterprise.</p>
         <p>This example assumes that PL Enterprise is the single source of truth for consent strings, and that a unique subject ID is being used. </p>
         <p>Check your network inspector to see the API calls being made!</p>
-        <p>The example workflow is as follows:</p>
+        <!-- <p>The example workflow is as follows:</p>
         <ul>
             <li>Once the page is loaded, we'll suppress the loading of the CMP dialog (regardless of whether we have consent already)</li>
             <li>Call PL Enterprise for the subject ID once we have it.</li>
             <li>If the subject ID does NOT yet exist within PL enterprise; show the CMP dialog.</li>
             <li>If the subject ID EXISTS within PL enterprise, use the CMP SDK's ability to set the consent string manually (leveraging TCF IAB's libraries)</li>
-        </ul>
+        </ul> -->
 
     </div>
 
     <div class="container">
-        <h3>General Consent info</h1>
-        <p>Current Consent String: <span id="consentStringDisplay"></span></p>
-        <p>Decoded Info: <span id="consentInfo"></span></p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody id="consent-data-info">    
-            <!-- Dynamically generated -->
-            </tbody>
-        </table>
+        <h3></h1>
+        <p>Current Consent String (set in CMP): <span id="consentStringDisplay"></span></p> 
+        <button onclick="updateViewConsentString()">Refresh view (queries CMP locally for current string)</button>
+
+        <p>Current Consent String (set in PL Enterprise): <span id="PL_consentStringDisplay"></span></p> 
+        <button onclick="updateViewRemoteConsentString()">Refresh view (queries PL Enterprise for current string)</button>
+
+        <p>(set me!) Current Data Subject Custom ID: <input id="subjectCustomID" type="number" value="1984" min="1000" max="9999"/></p>
+
+        <p>Note: The consent string takes into consideration the time stamp; so if they differ very slightly, that is likely why!</p>
+        <p>Feel free to diff it manually using: <a href="https://iabtcf.com/#/decode">IAB TCF decoder</a></p>
     </div>
 
     <div class="container">
-        <h3>Set Subject Data</h3>
-        <p>This will call the Pl enterprise endpoint for setting data.</p>
-        <button onclick="setSubjectDataAndDisplayResult()">Set subject data (to current consentString)</button>
+        <h3>Sync Client with Preference Link (using above subject ID)</h3>
+        <p>This will call the Pl enterprise endpoint, and set the remote consent string locally.</p>
+        <button onclick="clickSyncClientFromPrefLink()">Sync Client with PL Enterprise</button>
     </div>
 
     <div class="container">
-        <h3>Fetch Subject Data</h3>
-        <p>This will call the Pl enterprise endpoint for fetching data.</p>
-        <button onclick="fetchSubjectDataConsentAndDisplayResult()">Fetch subject data</button>
+        <h3>Force sync Preference Link with Client (using above subject ID)</h3>
+        <p>This will push the current CMP consent string -> Preference Link.</p>
+        <button onclick="clickSyncPrefLinkToClient()">Sync PL Enterprise (force) with Client</button>
     </div>
 
     <div class="container">
@@ -75,19 +72,57 @@
 
 
 
-    <p>Couple additional notes:</p>
+    <!-- <p>Couple additional notes:</p>
     <ul>
         <li>This showcases PL Enterprise, not PL. GDPR SDK syncs natively with PL today and doesn't require this additional work.</li>
         <li>This is a working example; please don't abuse the (test) service!</li>
         <li>The core JS implementation can be found here: <a href="https://github.com/foreza/lr-ats-examples/preference-link-example/src">Gitub JS src</a></li>
         <li>This example relies on an additional IAB library core lib to decode/set the string: <a href="https://github.com/InteractiveAdvertisingBureau/iabtcf-es/tree/master/modules/core">IAB TCFv2 src</a></li>
-        <li>The consent string can also be set via query param if your setup supports that.</li>
-        <!-- https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115 -->
+        <li>The consent string can also be set via query param if your setup supports that, like so: https://jasonthechiu.com/lr-ats-examples/preference-link-example?cconsent-v2=CPkPJ8APkPJ8AADAOBENCvCgAAAAAAAAAAAAAAAAAAAA.YAAAAAAAAAA&euconsent-v2=CPkPJ8APkPJ8AADAOBENCvCoAP_AAH_AAAAAGMwBgAKgBMAKaAp4BeYDGQMZgDAAVACYAGEApoC8wGMgAA.doAAAUgAAAA&gdpr-dau=true&gdpr-last-interaction=1671491039115
+        </li>
         <li>The preference link enterprise API docs (data API) be found here: <a href="https://liveramp-sandbox.readme.io/preferencelink-enterprise/reference/options_subject-data-identifying-value">PL Enterprise Docs</a></li>
-    </ul>
-    
-
+    </ul> -->
+     
 </div>
+
+<script>
+    // Demo related stuff; not really important.
+    // prefLinkSyncDemo.getCurrentLocalConsentString();
+
+    function updateViewConsentString(){
+        let tRef = document.getElementById("consentStringDisplay");
+        prefLinkSyncDemo.getCurrentLocalConsentString((consentString) => tRef.innerHTML = consentString);
+    }
+
+    function updateViewRemoteConsentString(){
+        let tRef = document.getElementById("PL_consentStringDisplay");
+        prefLinkSyncDemo.getRemoteConsentString(getCurrValueOfSubjectID(), (result) => {
+            // Success handle
+            tRef.innerHTML = result;
+        }, () => {
+            // Failure handle
+            tRef.innerHTML = "No string found for this subject ID:" + getCurrValueOfSubjectID();
+        });
+
+    }
+
+    function clickSyncClientFromPrefLink(){
+        prefLinkSyncDemo.syncWithPreferenceLinkEnterpriseForIdentifier(getCurrValueOfSubjectID());
+        // TODO: Update view
+    }
+
+    function clickSyncPrefLinkToClient(){
+        prefLinkSyncDemo.forcePreferenceLinkEnterpriseUpdateForIdentifier(getCurrValueOfSubjectID())
+        // TODO: Update view
+    }
+
+    function getCurrValueOfSubjectID(){
+        let tRef = document.getElementById("subjectCustomID");
+        return Number(tRef.value);
+    }
+
+
+</script>
 </body>
 
 </html>
