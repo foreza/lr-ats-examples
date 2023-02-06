@@ -1,0 +1,100 @@
+<head>
+    <style>
+        .sample {
+            min-width: 200px;
+            min-height: 200px;
+            border: 1px solid blue;
+            fill: aqua;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sample">
+        <h3>Hello, I am an inner frame. Praise me.</h3>
+        <p>Did I get an envelope? If so, here it is:
+            <span id="envelopeValue"></span>
+        </p>
+    </div>
+
+    <!-- Main ATS/Envelope related logic -->
+    <script>
+        // Subscribe to the listener for ATS.js envelope module 
+
+        function receiveEnvelope(event) {
+            if (event && event.data && event.data.message === 'ats-modules-liveramp-envelope-result') {
+                console.log(event.data.result, event.origin);
+                updateEnvelopeValueInView(event.data.result);
+            }
+        }
+
+        // Try to send a message to the outermost parent (via top.blah)
+
+        function sendMsgToATS() {
+
+            try {
+                // Post not to the parent; but the top window?
+                top.postMessage('ats-modules-liveramp-envelope-request', '*');
+            } catch (e) {
+                // Last ditch effort.
+                if (typeof (top.contentWindow) != 'undefined') {
+                    top.contentWindow.postMessage('ats-modules-liveramp-envelope-request', '*');
+                }
+            }
+
+            console.log("Attempted to post message to top window.")
+        }
+
+        // If we have an envelope, replace it.
+
+        // VIEW stuff
+        function updateEnvelopeValueInView(envValue) {
+            let tRef = document.getElementById("envelopeValue");
+            tRef.textContent = envValue ? envValue : "No envelope"
+        }
+
+
+        // This is purely an example.
+        function beginPollForEnvelope(intervalMs, count) {
+
+            // Ensure we don't have too fast of an interval.
+            // That would be rude, right?
+            if (intervalMs < 500) {
+                console.log("Setting beginPollForEnvelope to 500ms")
+                intervalMs = 500;
+            }
+
+            if (count < 1) {
+                console.log("Setting count to 1.")
+                count = 1;
+            }
+
+            let originalCount = count;
+
+            let poller = setInterval(() => {
+
+                if (count <= 0) {
+                    console.log("Done polling.")
+                    updateEnvelopeValueInView(`We tried. Sorry: ${originalCount-count}/${originalCount}`)
+                    clearInterval(poller);
+                }
+
+                // Send a message to the top window (which hopefully has ATS)
+                console.log("Attempting poll: ", count)
+                updateEnvelopeValueInView(`Trying to contact top window: ${originalCount-count}/${originalCount}`)
+                sendMsgToATS();
+                count--;
+
+            }, intervalMs);
+
+        }
+
+        // Subscribe to ATS listener
+        window.addEventListener('message', receiveEnvelope, false);
+        updateEnvelopeValueInView("Initialized..");
+
+        // Poll
+        beginPollForEnvelope(1000,5);
+
+    </script>
+</body>
