@@ -4,15 +4,15 @@
             min-width: 200px;
             min-height: 200px;
             border: 1px solid blue;
-            fill: aqua;
+            background-color: aqua;
         }
     </style>
 </head>
 
 <body>
     <div class="sample">
-        <h3>Hello, I am an inner frame. Praise me.</h3>
-        <p>Did I get an envelope? If so, here it is:
+        <p>(Inner frame) Did I get an envelope?
+            If so, here it is:
             <span id="envelopeValue"></span>
         </p>
     </div>
@@ -21,12 +21,27 @@
     <script>
         // Subscribe to the listener for ATS.js envelope module 
 
+        let poller; // access the poller
+
         function receiveEnvelope(event) {
             if (event && event.data && event.data.message === 'ats-modules-liveramp-envelope-result') {
                 console.log(event.data.result, event.origin);
-                updateEnvelopeValueInView(event.data.result);
+
+                try {
+                    let env = JSON.parse(event.data.result);
+                    updateEnvelopeValueInView(env.envelope);
+                } catch (e) {
+                    updateEnvelopeValueInView("Didn't get envelope: " + e);
+                }
+
+
+                if (typeof poller != "undefined") {
+                    console.log("Stopping poller")
+                    clearInterval(poller);
+                }
             }
         }
+
 
         // Try to send a message to the outermost parent (via top.blah)
 
@@ -71,17 +86,18 @@
 
             let originalCount = count;
 
-            let poller = setInterval(() => {
+            poller = setInterval(() => {
 
                 if (count <= 0) {
                     console.log("Done polling.")
-                    updateEnvelopeValueInView(`We tried. Sorry: ${originalCount-count}/${originalCount}`)
+                    updateEnvelopeValueInView(`We tried. Sorry: ${originalCount - count}/${originalCount}`)
                     clearInterval(poller);
+                    return;
                 }
 
                 // Send a message to the top window (which hopefully has ATS)
                 console.log("Attempting poll: ", count)
-                updateEnvelopeValueInView(`Trying to contact top window: ${originalCount-count}/${originalCount}`)
+                updateEnvelopeValueInView(`Trying to contact top window: ${originalCount - count}/${originalCount}`)
                 sendMsgToATS();
                 count--;
 
@@ -94,7 +110,7 @@
         updateEnvelopeValueInView("Initialized..");
 
         // Poll
-        beginPollForEnvelope(1000,5);
+        beginPollForEnvelope(1000, 5);
 
     </script>
 </body>
