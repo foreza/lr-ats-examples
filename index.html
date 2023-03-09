@@ -10,7 +10,26 @@
 
     <!-- Load this as close to the top of the document as possible -->
     <!-- <script async defer src="https://launchpad-wrapper.privacymanager.io/0ac9abb3-e561-4f79-9385-9bb06f8aa49a/launchpad-liveramp.js"></script> -->
+    
+    <!-- We have some pretty nifty ATS event listeners. -->
+    <script>
 
+    // ATS envelope module is ready to be used.
+    window.addEventListener("envelopeModuleReady", () => {
+        console.log("ATS Event Listener: envelopeModuleReady")
+    });
+
+    // An ATS envelope has been located!
+    window.addEventListener("lrEnvelopePresent",  () => {
+        console.log("ATS Event Listener: lrEnvelopePresent")
+    });
+
+        // ATS detection module is ready to be used.
+    window.addEventListener("detectionModuleReady", () => {
+        console.log("ATS Event Listener: detectionModuleReady")
+    });
+
+    </script>
     <!-- For local testing if you happen to be using localhost. Your envelope requests will fail if you run this on any other site. -->
     <script src="https://ats-wrapper.privacymanager.io/ats-modules/2bc4da3a-b0ae-49bb-8dbe-eb3d05ecbd38/ats.js"></script>
 
