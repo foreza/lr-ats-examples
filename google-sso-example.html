@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Follow this guide! -->
+    <!-- https://developers.google.com/identity/gsi/web/guides/overview -->
+
+    <title>Google GSI - ATS Popup Example - Implicit</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+
+    <!-- Google JS SDK, loaded asynchronously -->
+    <!-- You must include the Google Platform Library on your web pages that integrate Google Sign-In. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- For local testing if you happen to be using localhost. Your envelope requests will fail if you run this on any other site. -->
+    <script
+        src="https://ats-wrapper.privacymanager.io/ats-modules/2bc4da3a-b0ae-49bb-8dbe-eb3d05ecbd38/ats.js"></script>
+
+    <!-- For hashing (direct input required for SSO logins) -->
+    <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+
+    <!-- Things have to be pretty -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <style>
+        #example-form {
+            max-width: 600px;
+            border: 3px solid green;
+            padding: 20px;
+        }
+
+        #example-form button {
+            margin: 0;
+            padding: 0;
+            width: 100px;
+            height: 40px;
+            background: black;
+            color: white;
+        }
+
+        .container-login {
+            border: 1px solid blue;
+            padding: 10px;
+            max-width: 600px;
+        }
+
+        .token-container {
+            line-break: anywhere;
+            font-size: 11px;
+            background: #000;
+            color: green;
+        }
+
+        #email_from_credential {
+            background-color: aqua;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+
+        <h2 id="google-example">Sign in with Google - updated</h2>
+        <p>After the user logs in, google will send back a "credential", which is a JWT token!</p>
+        <p>The user's email will be within that token.</p>
+        <p>In this example, we assume here that your backend is not involved.</p>
+        <div class="container-login">
+
+            <!-- Specify a function like "onLoginSuccess" as the data-callback which recieves the object -->
+            <!-- This nifty tool auto-creates it: https://developers.google.com/identity/gsi/web/tools/configurator -->
+            <div id="g_id_onload"
+                data-client_id="454560084516-8eb8d8kv74mj7d1k1cpl821ekqn04o85.apps.googleusercontent.com"
+                data-context="signin" data-ux_mode="popup" data-callback="onLoginSuccess" data-itp_support="true">
+            </div>
+
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_black"
+                data-text="continue_with" data-size="large" data-logo_alignment="left">
+            </div>
+        </div>
+
+        <p>Decrypt the JWT credential token to get the email!
+        <p>JWT tokens can be decrypted with a 3rd party library of your choice!</p>
+        <p>Note: You can also opt to `split` the credential token, and grab the payload, and then base64 decode that.
+        </p>
+
+        <div class="container-login">
+
+            <p class="token-container">JWT Token: <br><span id="google_credential"></span></p>
+            <a id="jwt_io_link" target="_blank" href="https://jwt.io/#debugger-io?token=">Decode the above!</a>
+            <p>Email from Google Token: <br><span id="email_from_credential"></span></p>
+        </div>
+
+
+        <p> After you have your email, pass it to ATS via setAdditionalData! </p>
+        <p> In this example, you can check for an envelope below.</p>
+
+        <div>
+            <h3>Envelope info</h1>
+                <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
+                <button onclick="checkForEnvelope()">Check for Envelope</button>
+                <button onclick="invalidateEnvelope()">Invalidate Envelope</button>
+        </div>
+    </div>
+
+
+    <!-- Google's new GSI client integration example -->
+    <script>
+
+        var GOOGLE_EMAIL;
+
+        // Simple version of getting the email from JWT token.
+        // You may wish to use a proper 3rd party library; this is just an example.
+        function getEmailFromGoogleJWT(google_credential) {
+
+            let email = "";
+
+            try {
+                // JWT tokens have a header and the payload - we'll get just the payload.
+                var payloadObject = google_credential.split(".")[1];
+
+                // The individual components of the token are b64 encoded, so decode them to get a JSON string
+                payloadObject = atob(payloadObject);
+
+                // Now, parse the object for the email.
+                payloadObject = JSON.parse(payloadObject);
+                email = payloadObject.email;
+                console.log("Email found from JWT Token:", email);
+
+            } catch (e) {
+                console.error("Something went wrong:", e);
+            }
+
+            return email;
+        }
+
+        // On login success; google will call your function with an object containing a credential.
+        function onLoginSuccess(google_data) {
+
+            console.log("Received from Google", google_data);
+
+            // Required: Parse the token to get the email
+            GOOGLE_EMAIL = getEmailFromGoogleJWT(google_data.credential);
+
+            // Recommended: Hash our emails for good measure
+            var tuple = getHashedIdentifierTuple(GOOGLE_EMAIL);
+
+            // Provide our emails to ATS
+            setHashedIdentifiersForATSDirect(tuple.md5, tuple.sha1, tuple.sha256);
+
+
+            // View stuff to help with this demo
+            updateViewForDemo(google_data.credential, GOOGLE_EMAIL);
+        }
+
+
+    </script>
+
+
+    <!-- Lightweight example implementation of ATS + other demo utility functions -->
+    <script>
+
+        // Here's an example of how you might quickly hash your identifiers.
+        function getHashedIdentifierTuple(rawIdentifier) {
+
+            let hashedIDTuple = {};
+
+            if (typeof (rawIdentifier) != "undefined" && rawIdentifier.length > 0) {
+                hashedIDTuple = {
+                    md5: new Hashes.MD5().hex(rawIdentifier),
+                    sha1: new Hashes.SHA1().hex(rawIdentifier),
+                    sha256: new Hashes.SHA256().hex(rawIdentifier)
+                }
+            }
+
+            return hashedIDTuple;
+        }
+
+
+        // Here's an example of using "setAdditionalData" - this will in turn trigger
+        // a request to our identity API service for a RampID envelope.
+        function setHashedIdentifiersForATSDirect(identifierMD5, identifierSHA1, identifierSHA256) {
+            atsenvelopemodule.setAdditionalData({
+                'type': 'emailHashes',
+                'id': [identifierMD5, identifierSHA1, identifierSHA256]
+            });
+        }
+
+
+        // Helper function to update the view.
+        async function checkForEnvelope() {
+
+            const envDisplay = document.getElementById("atsEnvelopeValue");
+            let displayVal = "";
+
+            if (typeof (ats) != 'undefined') {
+                var env = await ats.retrieveEnvelope();
+                if (typeof (env) != 'undefined') {
+                    displayVal = env;
+                } else {
+                    displayVal = "no envelope"
+                }
+
+            } else {
+                displayVal = "ats not defined"
+            }
+
+            envDisplay.textContent = displayVal;
+        }
+
+
+        // Helper: Call this to reset the state of ATS.
+        function invalidateEnvelope() {
+            ats.invalidateEnvelope();
+            console.log("Invalidated existing envelope and refreshing");
+            window.location.reload();
+        }
+
+
+        // Helper fuction to help with the demo view
+        function updateViewForDemo(tokenString, email) {
+            let tokenP = document.getElementById("google_credential");
+            tokenP.innerHTML = tokenString;
+
+            let linkRef = document.getElementById("jwt_io_link");
+            linkRef.href = "https://jwt.io/#debugger-io?token=" + tokenString;
+
+            let googleEmailRef = document.getElementById("email_from_credential");
+            googleEmailRef.innerHTML = email;
+        }
+
+    </script>
+
+</body>
+
+
+
+</html>
