@@ -4,6 +4,8 @@ import {TCString, TCModel} from '@iabtcf/core';
 // If this has an error; return empty array?
 export function decodeStringAndReturnContents(encodedTCString) {
 
+  // For troubleshooting purposes, expose both of these globally:
+    window.TCString = TCString;
     window.playWithMe = "hello";
     var decodedTCModel;
     try {

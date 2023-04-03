@@ -94,8 +94,6 @@ export function setConsentGivenConsentString(consentString){
     }
 
     console.log("Consent components:", tcObject);
-
-    Array.from(playWithMe.vendorLegitimateInterests.set_)
     
     // Object with purposeIds, vendorIds, legIntPurposeIds, legIntVendorIds and/or specialFeatureIdsproperties.
     let consentObject = {
@@ -103,9 +101,19 @@ export function setConsentGivenConsentString(consentString){
         "vendorIds": Array.from(tcObject.vendorConsents.set_),
         "legIntPurposeIds": Array.from(tcObject.purposeLegitimateInterests.set_),
         "legIntVendorIds": Array.from(tcObject.vendorLegitimateInterests.set_),
-        "specialFeatureIdsproperties": Array.from(tcObject.specialFeatureOptins
-            .set_),
+        "specialFeatureIds": Array.from(tcObject.specialFeatureOptins.set_),
     }; // TODO;
+
+
+    // const {
+    //     purposeIds,
+    //     vendorIds,
+    //     legIntPurposeIds,
+    //     legIntVendorIds,
+    //     specialFeatureIds,
+    //     publisher = {},
+    //     consentOnDemand = false,
+    //   }
 
     console.log(consentObject);
 
