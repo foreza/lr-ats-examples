@@ -1,17 +1,16 @@
 import {TCString, TCModel} from '@iabtcf/core';
 
+window.TCString = TCString; // Assign to window so we can play with the decoder
 
 // If this has an error; return empty array?
 export function decodeStringAndReturnContents(encodedTCString) {
-
-  // For troubleshooting purposes, expose both of these globally:
-    window.TCString = TCString;
-    window.playWithMe = "hello";
+    
+    window.decodedModel = "";
     var decodedTCModel;
     try {
         decodedTCModel = TCString.decode(encodedTCString);
-        window.playWithMe = decodedTCModel;
-        console.log(decodedTCModel);
+        window.decodedModel = decodedTCModel;
+        console.log(`decodedTCModel: `, decodedTCModel);
         return decodedTCModel;
     } catch (e) {
       // Likely invalid TC string.
