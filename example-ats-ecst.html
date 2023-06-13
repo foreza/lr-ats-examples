@@ -2,51 +2,32 @@
 <html lang="en">
 
 <head>
-    <title>eCST with GTM</title>
+    <title>Enhanced Client Side Tag - Enhance your collection today!</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content="" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 
-    <!-- Privacy manager for web -->
-    <link rel="preload" href="https://gdpr.privacymanager.io/latest/gdpr.bundle.js" as="script" />
-    <script src="https://gdpr-wrapper.privacymanager.io/gdpr/13e87290-1c20-420b-8cc9-621c02f6409a/gdpr-liveramp.js">
-    </script>
 
-    <!-- ATS on page -->
-    <!-- <script
-        src="https://ats-wrapper.privacymanager.io/ats-modules/2bc4da3a-b0ae-49bb-8dbe-eb3d05ecbd38/ats.js"></script> -->
+    <link rel="preload" href="https://launchpad.acc.privacymanager.io/latest/launchpad.bundle.js" as="script" />
+
+    <!-- Tip: If you need to test this on localhost? Add that to your launchpad loading rule -->
+    <script async defer src="https://launchpad-wrapper.acc.privacymanager.io/50eff305-60ba-4957-9bdc-b81e705c3156/launchpad-liveramp.js"></script>
+    
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-
-    <!-- https://tagmanager.google.com/#/container/accounts/6005930370/containers/58839664/workspaces/7/tags -->
-
-    <!-- Google Tag Manager -->
-    <script>(function (w, d, s, l, i) {
-            w[l] = w[l] || []; w[l].push({
-                'gtm.start':
-                    new Date().getTime(), event: 'gtm.js'
-            }); var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-5TW2GDX');</script>
-    <!-- End Google Tag Manager -->
 
 </head>
 
 <body>
 
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5TW2GDX" height="0" width="0"
-            style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
 
     <div class="container">
 
-        <h1>Hello there.</h1>
-        <p>This page features a sample LiveRamp eCST being loaded over google tag manager.</p>
-        <p>Check your network inspector to see the API calls being made.</p>
+        <h1>Hello there - </h1>
+        <p>This page features a sample LiveRamp eCST, loaded alongside ATS.</p>
+        <p>Check your network inspector to see the API call being made!</p>
 
     </div>
 
@@ -68,18 +49,174 @@
 
 
 <script>
-    // Assumes google tag manager is loaded, and that triggerECST is defined
+
+    window.addEventListener("ecstModuleReady", async () => {
+        console.log("YO DAWG");
+        __launchpad('ecst', {justLaunched: 'true', listener: 'alwaysListening'}, (e) => console.log("YES!", e));
+    });
+
+
     function sampleECSTCall() {
-        triggerECST("isAmazingUser=true,key2=value2");
+        // triggerECST("isAmazingUser=true,key2=value2");
+        __launchpad('ecst', {isAmazingUser: 'true', key2: 'value2'}, (e) => console.log("fired", e));
     }
 
-    // Assume ATS is loaded.
     function setSampleEnvelope() {
         atsenvelopemodule.setAdditionalData({
             'type': 'email',
             'id': "jason.chiu@liveramp.com"
         });
     }
+
+
+
+    // Example: fire the eCST on page load?
+
+
+
 </script>
 
 </html>
+
+
+
+ <!-- Legacy method -->
+
+    <!-- <script>
+        function triggerECST(pdata) {
+    /*
+        Set variables and enter your IDs. 
+        If you do not have a pid or pixelID, contact your LiveRamp representative.
+    */
+
+    var consentString;
+    var pid =  13669;
+    var pixelID = 71213
+
+    // First step - get the consent string.
+    if (typeof __tcfapi == 'undefined') {
+        console.log("CMP not found - attempt to fire eCST without consent string");
+        // If the CMP has not loaded for whatever reason, fire the eCST without consent?
+        fetchEnvelopeAndFireECSTForConsent(pdata, pid, pixelID, "");
+        return;
+    } else {
+        console.log("CMP found - attempt to fire eCST after getting consent");
+        // Call the CMP to get the consent string
+        __tcfapi('getTCData', 2, function (data, success) {
+            if (success) {
+                consentString = "&ct=4&cv=" + data.tcString;
+            } else {
+                consentString = ""
+            }
+
+            fetchEnvelopeAndFireECSTForConsent(pdata, pid, pixelID, consentString);
+        })
+    }
+
+
+    // Helper function to handle our logic to avoid code duplication
+    function fetchEnvelopeAndFireECSTForConsent(pdata, pid, pixelID, consentString) {
+
+        return retrieveEnvelopeFromATS().then(function (envString) {
+                // If we have no envelope from ATS
+                // Try to fetch one from API fallback
+                if (envString == "noEnvelope") {
+                    console.log("Attempting ATS API fallback before firing eCST.")
+                    envString = doEnvelopeAPIFallback(pid, consentString).then(
+                        function (envString) {
+                            fireECSTForPData(pdata, pixelID, envString, consentString);
+                        });
+
+                } else {
+                    // Create the URL for CST, concatenate the envelope to the pdata field and apply consent parameter if applicable
+                    console.log("Firing eCST with envelope")
+                    fireECSTForPData(pdata, pixelID, envString, consentString);
+                }
+            }
+
+        );
+    }
+
+
+    function retrieveEnvelopeFromATS() {
+
+        var envString;
+
+        // Check to see if ATS exists.
+        if (typeof ats != 'undefined') {
+            console.log("ATS exists; using ats to get envelope")
+            return ats.retrieveEnvelope(function (envelope) {
+                if (typeof envelope != 'undefined') {
+                    envString = JSON.parse(envelope).envelope;
+                } else {
+                    envString = "noEnvelope";
+                }
+                return envString;
+            })
+        } else {
+
+            console.log("ATS does not yet exist; checking cookie for envelope")
+
+            // TODO: If your implementation uses local storage, get it from storage instead.
+            var cookieString = document.cookie.split('; ');
+            var cookieVal = cookieString.find(function (e) {
+                return e.startsWith('_lr_env=');
+            })
+
+            if (typeof cookieVal != "undefined") {
+                envString = JSON.parse(atob(cookieVal.split("=")[1].split("%3D")[0])).envelope;
+            } else {
+                envString = "noEnvelope";
+            }
+
+            // Return a resolved promise
+            return Promise.resolve(envString);
+
+        }
+
+
+    }
+
+    // Perform a fallback lookup using the cookie (if it exists) on the current page
+    // Returns the promise
+    function doEnvelopeAPIFallback(pid, consentString) {
+
+        var envString;
+
+        try {
+            envString = fetch("https://api.rlcdn.com/api/identity/envelope?pid="
+                + pid + consentString, { credentials: 'include' })
+                .then(function (response) {
+                    if (response.status == '200') {
+                        return response.json().envelope;
+                    } else {
+                        return "noEnvelope";
+                    }
+                })
+        } catch (error) {
+            envString = "noEnvelope";
+        }
+
+        return Promise.resolve(envString);
+    }
+
+
+    function fireECSTForPData(pdata, pixelID, envString) {
+
+        var pdataParsed;
+
+        if (pdata == null) {
+            pdataParsed = ""
+        } else {
+            pdataParsed = encodeURIComponent(pdata);
+        }
+
+        var reqUrl = "https://di.rlcdn.com/api/segment?pid=" + pixelID +
+            "&it=19&iv=" + envString +
+            "&pdata=" + pdataParsed;
+
+        fetch(reqUrl, { credentials: 'include' });
+    }
+
+}
+    </script> -->
