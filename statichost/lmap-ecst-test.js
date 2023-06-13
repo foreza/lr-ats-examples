@@ -1,3 +1,4 @@
+// Got your conk!
 var launchPad = document.createElement("script")
   , launchPadConfiguration = (launchPad.async = !0,
 launchPad.defer = !0,
