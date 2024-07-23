@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>LiveRamp Technical</title>
+
+    <!-- Including Script for Task 3 -->
+    <script src="https://cdn.rawgit.com/h2non/jsHashes/master/hashes.js"></script>
+</head>
+
+<body>
+    <h1> SAMPLE ANSWERs - LiveRamp Implementation Technical - </h1>
+        <p>Session ID: <span id="sessionId">SGV5LCB5b3UgZm91bmQgbWUhIC0gTGl2ZVJhbXAgU29sdXRpb25z</span>
+        <div class="container">
+            <h2>Sample Email Form</h2>
+            <form id="example-form">
+                <!-- TODO: Retrieve the value of the email field -->
+                <input type="text" id="emailInput" value="test@liveramp.com" placeholder="test@liveramp.com">
+            </form>
+        </div>
+
+        <!-- TODO: Write your code for tasks 1-4 below! -->
+        <!-- You can write your scripts here! Here's an example one - -->
+
+        <script>
+
+            // Gets the session ID from a paragraph element
+            // Logs it out to the console
+            function printSessionID() {
+                var sessionId = document.getElementById("sessionId").innerHTML;
+                console.log("Exam session ID:", sessionId);
+
+                // LIVE TEST - sample code addition! ;)
+                console.log("Exam session secret:", atob(sessionId));
+            }
+
+            
+            // TASK 1 - Fetch email from page
+            
+            // This function retrieves the email from the id "emailInput" 
+            // It returns the email to be used.
+            function fetchEmailFromPage(){
+                var email = document.getElementById("emailInput").value;
+                console.log("Task 1: ", email);
+                return email;
+            }
+
+            // TASK 2 - Base 64 Encode email string
+            var base64Email = "";
+
+            // This function base64 encodes a provided value and prints it out
+            function printBase64Encode(emailValue){
+                base64Email = btoa(emailValue);
+                console.log("Task 2: ", base64Email);
+            }
+
+
+            // TASK 3 - Add JavaScript Tag to page - see above in <head> tag
+
+            // TASK 4 - SHA256 Hash email string
+            var myHashedEmail;
+
+            function printSHA256Hash(){
+                myHashedEmail = new Hashes.SHA256().hex(pageEmail);
+                console.log("Task 4: ", myHashedEmail);
+            }
+
+
+            // BONUS TASK - Everything happen on Page Load (optional)
+            var pageEmail = fetchEmailFromPage();   // Do Task 1
+            printBase64Encode(pageEmail);           // Do Task 2
+            printSHA256Hash(pageEmail);             // Do Task 4
+
+            // NEXT: Live implementation test
+            printSessionID();
+
+        </script>
+
+
+</body>

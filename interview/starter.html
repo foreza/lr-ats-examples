@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>LiveRamp Technical</title>
+</head>
+
+<body>
+    <h1> LiveRamp Implementation Technical</h1>
+        <p>Session ID: <span id="sessionId">SGV5LCB5b3UgZm91bmQgbWUhIC0gTGl2ZVJhbXAgU29sdXRpb25z</span>
+        <div class="container">
+            <h2>Sample Email Form</h2>
+            <form id="example-form">
+                <!-- TODO: Retrieve the value of the email field -->
+                <input type="text" id="emailInput" value="test@liveramp.com" placeholder="test@liveramp.com">
+            </form>
+        </div>
+
+        <!-- TODO: Write your code for tasks 1-4 below! -->
+
+        <!-- You can write your scripts here! Here's an example one - -->
+        <script>
+
+            function printSessionID() {
+                // Gets the session ID from a paragraph element
+                // Logs it out to the console
+                var sessionId = document.getElementById("sessionId").innerHTML;
+                console.log("Exam session ID:", sessionId);
+            }
+
+            // Call the function
+            printSessionID() ;
+        </script>
+
+
+</body>
