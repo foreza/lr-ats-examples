@@ -44,11 +44,10 @@
         // await somenetwork call, do some page processing here
 
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            injectLiveRamp();
-            await addPageTargeting();
+        document.addEventListener('DOMContentLoaded', () => {
+            injectLiveRamp();       // Try to have liveramp load first, but don't block
+            addPageTargeting();     // Get targeting right after
         });
-
 
         async function addPageTargeting() {
 
@@ -56,28 +55,28 @@
 
             // Get email - method 1
 
-            const response = await fetch('https://randomuser.me/api/?inc=email');
-            const data = await response.json();
-            const email = data.results[0].email;
-            logEvent("[Logic] Random User Email:', " + email);
-
+            // const response = await fetch('https://randomuser.me/api/?inc=email');
+            // const data = await response.json();
+            // const email = data.results[0].email;
 
             // Get email - method 2
 
-            // function simulateNetworkCall() {
-            //     return new Promise((resolve) => {
-            //         const delay = Math.random() * 2000 + 1000; // Random delay between 1-3 seconds
-            //         setTimeout(() => {
-            //             resolve("atstest@liveramp.com");
-            //         }, delay);
-            //     });
-            // }
+            function simulateNetworkCall() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve("atstest@liveramp.com");
+                    }, 100);
+                });
+            }
 
-            // const email = await simulateNetworkCall();
+            const email = await simulateNetworkCall();
+
 
             exampleUserData.email = email;
-            exampleUserData.userSHA256HEM = await getSHA256Hash(email);
+            logEvent("[Logic] Random User Email:', " + email);
 
+
+            exampleUserData.userSHA256HEM = await getSHA256Hash(email);
             logEvent("[Logic] Random User Email, now hashed:', " + exampleUserData.userSHA256HEM);
 
             // I have an email - give this to all of my identity partners, including LiveRamp - right away
@@ -109,6 +108,9 @@
                 });
             }
 
+
+            logEvent("[Logic] finished addPageTargeting");
+
             checkATSViewStatus();
             checkATSEnvelopeStatus();
         }
@@ -119,7 +121,7 @@
 
         function injectLiveRamp() {
 
-            logEvent("Begin Injecting Launchpad!")
+            logEvent("[Logic] Begin Injecting Launchpad!")
 
             // Avoid polling for ATS - use this listener.
             // Subscribe to envelopeModuleReady BEFORE injecting the script
@@ -150,7 +152,7 @@
 
         }
 
-    
+
 
     </script>
 
@@ -205,15 +207,22 @@
                 return
             }
 
-            try {
-                ats.retrieveEnvelope((e) => {
-                    let env = JSON.parse(e);
-                    atsEnvelopeValue.textContent = env.envelope;
-                    console.log(env)
-                });
-            } catch (e) {
-                console.error(e);
-            }
+
+            ats.retrieveEnvelope((e) => {
+                if (typeof e == "undefined") {
+                    atsEnvelopeValue.textContent = "Not loaded"
+                } else {
+                    try {
+                        let env = JSON.parse(e);
+                        atsEnvelopeValue.textContent = env.envelope;
+                        return env.envelope;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+
+            });
+
 
         }
 
@@ -272,6 +281,7 @@
             document.body.appendChild(img);
         }, 100);
     </script>
+
 </body>
 
 </html>
