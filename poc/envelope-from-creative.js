@@ -60,6 +60,12 @@ addEnvelopeViewToDom();
 // Begin polling
 var envelopePoll = setInterval(() => {
    retryCounter--;
+
+   if (retryCounter <= 0) {
+      console.log("Stop polling!");
+      clearInterval(envelopePoll);
+   }
+
    console.log("Creative polling start: " + retryCounter + " more times");
    makeCallToParentForEnvelope();
 }, 1000);
