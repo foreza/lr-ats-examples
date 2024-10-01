@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>LP + ATS - Envelope Module Ready - Example</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <!-- To make things look dapper.. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- For the sake of building our example, we'll include this specific portion in-line here -->
+    <!-- Thanks to: https://stackoverflow.com/a/67600346 - make use of window.crypto -->
+    <script>
+
+        const getSHA256Hash = async (input) => {
+            const textAsBuffer = new TextEncoder().encode(input);
+            const hashBuffer = await window.crypto.subtle.digest("SHA-256", textAsBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hash = hashArray
+                .map((item) => item.toString(16).padStart(2, "0"))
+                .join("");
+            return hash;
+        };
+
+    </script>
+
+    <!-- Example business logic -->
+    <script>
+
+        let exampleUserData = {
+            userEmail: "",
+            userSHA256HEM: "",
+            userAge: 0,
+            pageCategories: [],
+            userLocation: {}
+        }
+
+        // Simulate on page load typical behavior
+        // Get page contextual and user data from some backend
+        // await somenetwork call, do some page processing here
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            injectLiveRamp();       // Try to have liveramp load first, but don't block
+            addPageTargeting();     // Get targeting right after
+        });
+
+        async function addPageTargeting() {
+
+            logEvent("[Logic] start addPageTargeting");
+
+            // Get email - method 1
+
+            // const response = await fetch('https://randomuser.me/api/?inc=email');
+            // const data = await response.json();
+            // const email = data.results[0].email;
+
+            // Get email - method 2
+
+            function simulateNetworkCall() {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve("atstest@liveramp.com");
+                    }, 100);
+                });
+            }
+
+            const email = await simulateNetworkCall();
+
+
+            exampleUserData.email = email;
+            logEvent("[Logic] Random User Email:', " + email);
+
+
+            exampleUserData.userSHA256HEM = await getSHA256Hash(email);
+            logEvent("[Logic] Random User Email, now hashed:', " + exampleUserData.userSHA256HEM);
+
+            // I have an email - give this to all of my identity partners, including LiveRamp - right away
+
+            logEvent("[Logic] Check ATS status...");
+
+            // Check to see if ATS has loaded already -
+            if (window.ats && window.atsenvelopemodule &&
+                window.atsenvelopemodule.isModuleReady()) {
+
+                logEvent("[Logic] ATS was ready! envelopeModuleReady not needded - Now setting email");
+
+                atsenvelopemodule.setAdditionalData({
+                    'id': [exampleUserData.userSHA256HEM],
+                    'type': 'emailHashes',
+                });
+
+            } else {
+                logEvent("[Logic] ATS not yet loaded - adding envelopeModuleReady window event listener...");
+
+                window.addEventListener("envelopeModuleReady", () => {
+
+                    logEvent("[Logic] envelopeModuleReady has fired - now setting email");
+
+                    atsenvelopemodule.setAdditionalData({
+                        'id': [exampleUserData.userSHA256HEM],
+                        'type': 'emailHashes',
+                    });
+                });
+            }
+
+
+            logEvent("[Logic] finished addPageTargeting");
+
+            checkATSViewStatus();
+            checkATSEnvelopeStatus();
+        }
+    </script>
+
+    <!-- Example of injecting LaunchPad onto the page  -->
+    <script>
+
+        function injectLiveRamp() {
+
+            logEvent("[Logic] Begin Injecting Launchpad!")
+
+            // Avoid polling for ATS - use this listener.
+            // Subscribe to envelopeModuleReady BEFORE injecting the script
+            window.addEventListener("envelopeModuleReady", () => {
+                logEvent('[ATS] envelopeModuleReady, reported from injection script');
+                checkATSViewStatus();
+                checkATSEnvelopeStatus();
+            });
+
+
+            // Execute this in a closure
+            // Thought - also make sure LP loads on page view loading rule? JC
+            (function () {
+                var lpBundle = document.createElement("link");
+                // lpBundle.rel = 'preload';
+                lpBundle.href = "https://launchpad.privacymanager.io/latest/launchpad.bundle.js";
+                lpBundle.as = "script";
+                document.body.appendChild(lpBundle);
+
+                // var lpScript = document.createElement("script");
+                // lpScript.async = false;
+                // lpScript.defer = false;  // Defer = true will cause this to run only after the page onDomLoaded fires
+                // document.body.appendChild(lpScript);
+                // lpScript.src = "https://launchpad-wrapper.privacymanager.io/3049c394-504a-4e03-b4be-89962715b42d/launchpad-liveramp.js";
+
+
+                var lpScript = document.createElement("script");
+                lpScript.async = true;
+                lpScript.defer = true;  // Defer = true when async is set to true will not do anything
+                document.body.appendChild(lpScript);
+                lpScript.src = "https://ats-wrapper.privacymanager.io/ats-modules/73e3e8e3-19f2-4e11-8446-73106b3c7853/ats.js";
+
+
+                logEvent("[Logic] Finished Injected Launchpad!")
+            })();
+
+        }
+
+
+
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <h1>Injecting Launchpad? With window event listeners?</h1>
+        <p>If you're a fan of loading LaunchPad/ATS by using document.appendChild (we hear, we know)...</p>
+        <p>It is possible you'll run into race conditions at some point where you have an email, but ATS is not ready!
+        </p>
+        <p>This example illustrates how you ensure you can provide emails to ATS through setAdditionalData, ALWAYS</p>
+        <p>Here's what to keep in mind:</p>
+
+        <ul>
+            <li>ATS will take some time to load. If you call ats.setAdditionalData() before it is loaded, it will fail!
+            </li>
+            <li>ATS will ALWAYS fire the `envelopeModuleReady` window event when it is ready!</li>
+            <li>You must subscribe to envelopeModuleReady BEFORE you try to inject launchpad!</li>
+            <li>The source code on the page details a fail proof strategy to ensure ATS always captures an email from
+                you</li>
+        </ul>
+
+        <div>
+            <h3>General ATS info</h1>
+                <p>ATS Envelope Module Loaded: <span id="atsEnabled"></span></p>
+                <p>Envelope Available: <span id="atsEnvelopeValue"></span></p>
+        </div>
+
+        <div id="eventLog"></div>
+    </div>
+
+
+    <!-- Helpful view stuff -->
+    <script>
+
+        function checkATSViewStatus() {
+            let atsEnabled = document.getElementById('atsEnabled');
+            if (typeof atsenvelopemodule == 'undefined') {
+                atsEnabled.textContent = "Not loaded"
+            } else {
+                atsEnabled.textContent = "Loaded"
+            }
+        }
+
+        function checkATSEnvelopeStatus() {
+
+            let atsEnvelope = document.getElementById('atsEnvelopeValue');
+
+            if (typeof atsenvelopemodule == 'undefined') {
+                atsEnvelopeValue.textContent = "Not loaded"
+                return
+            }
+
+
+            ats.retrieveEnvelope((e) => {
+                if (typeof e == "undefined") {
+                    atsEnvelopeValue.textContent = "Not loaded"
+                } else {
+                    try {
+                        let env = JSON.parse(e);
+                        atsEnvelopeValue.textContent = env.envelope;
+                        return env.envelope;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+
+            });
+
+
+        }
+
+
+    </script>
+
+    <!-- Tool for measuring page load -->
+    <script>
+        let eventCount = 1;
+        const eventLog = document.getElementById('eventLog');
+        const startTime = performance.now();
+
+        function logEvent(eventName) {
+            const currentTime = performance.now();
+            const timeSinceStart = (currentTime - startTime).toFixed(2);
+            const timestamp = new Date().toISOString();
+            const log = `${eventCount}. ${eventName} - Time: ${timeSinceStart}ms - ${timestamp}`;
+            console.log(log);
+            const logElement = document.createElement('div');
+            logElement.innerHTML = `${eventCount}. ${eventName} - <span class="timestamp">Time: ${timeSinceStart}ms - ${timestamp}</span>`;
+            eventLog.appendChild(logElement);
+            eventCount++;
+        }
+
+        // Logging readystatechange events
+        document.onreadystatechange = () => {
+            logEvent(`[document] readystatechange: ${document.readyState}`);
+        };
+
+        // Logging DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', () => {
+            logEvent('[document] DOMContentLoaded');
+        });
+
+        // Logging load
+        window.addEventListener('load', () => {
+            logEvent('[document] load');
+        });
+
+        // Logging beforeunload
+        window.addEventListener('beforeunload', (event) => {
+            logEvent('[document] beforeunload');
+            // Uncomment the next line to show a browser dialog when leaving the page
+            // event.returnValue = '';
+        });
+
+        // Logging unload
+        window.addEventListener('unload', () => {
+            logEvent('[document] unload');
+        });
+
+        // Simulating some delay to better observe the events
+        setTimeout(() => {
+            const img = new Image();
+            img.src = 'https://via.placeholder.com/150';
+            document.body.appendChild(img);
+        }, 100);
+    </script>
+
+
+</body>
+
+</html>
