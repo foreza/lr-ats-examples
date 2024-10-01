@@ -143,11 +143,12 @@
 
                 var lpScript = document.createElement("script");
                 lpScript.async = false;
-                lpScript.defer = true;
-                lpScript.src = "https://launchpad-wrapper.privacymanager.io/3049c394-504a-4e03-b4be-89962715b42d/launchpad-liveramp.js";
+                lpScript.defer = false;  // Defer = true will cause this to run only after the page onDomLoaded fires
                 document.body.appendChild(lpScript);
+                lpScript.src = "https://launchpad-wrapper.privacymanager.io/3049c394-504a-4e03-b4be-89962715b42d/launchpad-liveramp.js";
 
-                logEvent("Finished Injected Launchpad!")
+
+                logEvent("[Logic] Finished Injected Launchpad!")
             })();
 
         }
@@ -281,6 +282,7 @@
             document.body.appendChild(img);
         }, 100);
     </script>
+
 
 </body>
 
