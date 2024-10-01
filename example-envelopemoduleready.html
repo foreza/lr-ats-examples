@@ -142,8 +142,8 @@
                 document.body.appendChild(lpBundle);
 
                 var lpScript = document.createElement("script");
-                lpScript.async = false;
-                lpScript.defer = false;  // Defer = true will cause this to run only after the page onDomLoaded fires
+                lpScript.async = true;
+                lpScript.defer = true;  // Defer = true will cause this to run only after the page onDomLoaded fires
                 document.body.appendChild(lpScript);
                 lpScript.src = "https://launchpad-wrapper.privacymanager.io/3049c394-504a-4e03-b4be-89962715b42d/launchpad-liveramp.js";
 
